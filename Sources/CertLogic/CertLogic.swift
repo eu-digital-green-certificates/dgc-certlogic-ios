@@ -8,6 +8,8 @@ import jsonlogic
 import JSON
 import Foundation
 
+typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
+
 final class CertLogicEngine {
   
   private var schema: String
@@ -18,14 +20,14 @@ final class CertLogicEngine {
     self.rules = rules
   }
   
-  func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
-    return []
+  func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
+      completion?([])
   }
   
   // Get List of Rules for Country by Code
   private func getListOfRulesFor(countryCode: String) -> [Rule] {
-    return rules.filter {
-      
+    return rules.filter { rule in
+      return rule.countryCode == countryCode
     }
   }
 

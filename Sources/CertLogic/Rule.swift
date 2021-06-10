@@ -22,6 +22,7 @@ class Rule {
   var validTo: String
   var affectedString: [String]
   var logic: String
+  var countryCode: String
   
   init(identifier: String,
        type: String,
@@ -34,7 +35,8 @@ class Rule {
        validFrom: String,
        validTo: String,
        affectedString: [String],
-       logic: String) {
+       logic: String,
+       countryCode: String) {
     self.identifier = identifier
     self.type = type
     self.version = version
@@ -47,5 +49,6 @@ class Rule {
     self.validTo = validTo
     self.affectedString = affectedString
     self.logic = logic
+    self.countryCode = countryCode
   }
 }
