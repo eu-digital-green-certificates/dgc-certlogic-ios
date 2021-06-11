@@ -21,10 +21,8 @@ let package = Package(
         .target(
             name: "CertLogic",
           dependencies: ["jsonlogic"]),
-      
-//      dependencies: [.product(name: "jsonlogic", package: "jsonlogic"), .product(name: "JSON", package: "jsonlogic")]),
         .testTarget(
             name: "CertLogicTests",
-            dependencies: ["CertLogic"]),
+            dependencies: ["CertLogic", "jsonlogic"]),
     ]
 )

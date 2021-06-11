@@ -9,7 +9,8 @@ import Foundation
 
 // MARK: Rule type
 
-class Rule {
+class Rule: Codable {
+  
   var identifier: String
   var type: String
   var version: String
@@ -24,6 +25,11 @@ class Rule {
   var logic: String
   var countryCode: String
   
+  enum CodingKeys: String, CodingKey {
+    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", logic = "Logic", countryCode = "CountryCode"
+  }
+  
+  // Init with custom fields
   init(identifier: String,
        type: String,
        version: String,
@@ -51,4 +57,23 @@ class Rule {
     self.logic = logic
     self.countryCode = countryCode
   }
+  
+  // Init Rule from JSON Data
+  required init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    identifier = try container.decode(String.self, forKey: .identifier)
+    type = try container.decode(String.self, forKey: .type)
+    version = try container.decode(String.self, forKey: .version)
+    schemaVersion = try container.decode(String.self, forKey: .schemaVersion)
+    engine = try container.decode(String.self, forKey: .engine)
+    engineVersion = try container.decode(String.self, forKey: .engineVersion)
+    certificateType = try container.decode(String.self, forKey: .certificateType)
+    description = try container.decode([Description].self, forKey: .description)
+    validFrom = try container.decode(String.self, forKey: .validFrom)
+    validTo = try container.decode(String.self, forKey: .validTo)
+    affectedString = try container.decode([String].self, forKey: .affectedString)
+    logic = try container.decode(String.self, forKey: .logic)
+    countryCode = try container.decode(String.self, forKey: .countryCode)
+  }
+  
 }

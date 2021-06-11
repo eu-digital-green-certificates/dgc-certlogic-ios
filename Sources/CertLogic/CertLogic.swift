@@ -19,7 +19,17 @@ final class CertLogicEngine {
     self.schema = schema
     self.rules = rules
   }
-  
+
+  init(schema: String, rulesData: Data) {
+    self.schema = schema
+    self.rules = CertLogicEngine.getRules(from: rulesData)
+  }
+
+  init(schema: String, rulesJSONString: String) {
+    self.schema = schema
+    self.rules = CertLogicEngine.getRules(from: rulesJSONString)
+  }
+
   func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
       completion?([])
   }
@@ -31,6 +41,26 @@ final class CertLogicEngine {
     }
   }
 
-  
+  // Parce Rules from Data or JSON String
+  static func getRules(from jsonString: String) -> [Rule] {
+    guard let jsonData = jsonString.data(using: .utf8) else { return []}
+    return getRules(from: jsonData)
+  }
+
+  static func getRules(from jsonData: Data) -> [Rule] {
+    guard let rules: [Rule] = try? JSONDecoder().decode([Rule].self, from: jsonData) else { return [] }
+    return rules
+  }
+
+  static func getRule(from jsonString: String) -> Rule? {
+    guard let jsonData = jsonString.data(using: .utf8) else { return nil}
+    return getRule(from: jsonData)
+  }
+
+  static func getRule(from jsonData: Data) -> Rule? {
+    guard let rule: Rule = try? JSONDecoder().decode(Rule.self, from: jsonData) else { return nil }
+    return rule
+  }
+
 }
 

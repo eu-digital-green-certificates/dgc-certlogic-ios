@@ -1,17 +1,10 @@
 //
-//  File.swift
-//  
-//
-//  Created by Alexandr Chernyy on 08.06.2021.
-//
-
-import Foundation
-//
 //  ValidationResult.swift
 //
 //
 //  Created by Alexandr Chernyy on 08.06.2021.
 //
+import Foundation
 
 // MARK: Result type
 
