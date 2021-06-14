@@ -28,7 +28,7 @@
 
 This repository contains the source code of the EU Digital COVID Certificate Certlogic for iOS. 
 
-- [ ] TODO: Component description
+This module allows integrating the certlogic in iOS apps.
 
 ## Development
 
