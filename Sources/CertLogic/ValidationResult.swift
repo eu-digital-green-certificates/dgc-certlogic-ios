@@ -23,7 +23,6 @@ class ValidationResult {
   private var validationErrors: [Error]?
   
   init(rule: Rule,
-       description: String,
        result: Result = .open,
        validationErrors: [Error]? = nil) {
     self.rule = rule

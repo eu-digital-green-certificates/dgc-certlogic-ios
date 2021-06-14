@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import JSON
 
 // MARK: Rule type
 
