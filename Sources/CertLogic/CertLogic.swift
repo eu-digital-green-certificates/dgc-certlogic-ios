@@ -35,7 +35,7 @@ final class CertLogicEngine {
   func validate(schema: String, external: ExternalParameter, payload: String) -> [ValidationResult] {
     self.schema = schema
     var result: [ValidationResult] = []
-    let rulesItems = getListOfRulesFor(countryCode: "UA")
+    let rulesItems = getListOfRulesFor(countryCode: external.countryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
@@ -76,9 +76,11 @@ final class CertLogicEngine {
   private func getVersion(from schemeString: String) -> Int {
     let codeVersionItems = schema.components(separatedBy: ".")
     var version: Int = 0
-    for index in (codeVersionItems.count - 1)...0 {
-      let division = Int(pow(Double(10), Double(index)))
-      let forSum: Int = Int(codeVersionItems[index]) ?? 0 * division
+    let maxIndex = codeVersionItems.count - 1
+    for index in 0...maxIndex {
+      let division = Int(pow(Double(10), Double(maxIndex - index)))
+      let calcVersion: Int = Int(codeVersionItems[index]) ?? 1
+      let forSum: Int =  calcVersion * division
       version = version + forSum
     }
     return version
@@ -86,7 +88,7 @@ final class CertLogicEngine {
   
   // MARK:
   private func getJSONStringForValidation(external: ExternalParameter, payload: String) -> String {
-    guard let jsonData = try? JSONEncoder().encode(external) else { return ""}
+    guard let jsonData = try? defaultEncoder.encode(external) else { return ""}
     let externalJsonString = String(data: jsonData, encoding: .utf8)!
     
     var result = ""
@@ -97,7 +99,7 @@ final class CertLogicEngine {
   // Get List of Rules for Country by Code
   private func getListOfRulesFor(countryCode: String) -> [Rule] {
     return rules.filter { rule in
-      return rule.countryCode == countryCode
+      return rule.countryCode.lowercased() == countryCode.lowercased()
     }
   }
 
@@ -108,7 +110,7 @@ final class CertLogicEngine {
   }
 
   static func getRules(from jsonData: Data) -> [Rule] {
-    guard let rules: [Rule] = try? JSONDecoder().decode([Rule].self, from: jsonData) else { return [] }
+    guard let rules: [Rule] = try? defaultDecoder.decode([Rule].self, from: jsonData) else { return [] }
     return rules
   }
 
@@ -118,8 +120,19 @@ final class CertLogicEngine {
   }
 
   static func getRule(from jsonData: Data) -> Rule? {
-    guard let rule: Rule = try? JSONDecoder().decode(Rule.self, from: jsonData) else { return nil }
+    guard let rule: Rule = try? defaultDecoder.decode(Rule.self, from: jsonData) else { return nil }
     return rule
+  }
+
+  // Parce external parameters
+  static func getExternalParameter(from jsonString: String) -> ExternalParameter? {
+    guard let jsonData = jsonString.data(using: .utf8) else { return nil}
+    return getExternalParameter(from: jsonData)
+  }
+
+  static func getExternalParameter(from jsonData: Data) -> ExternalParameter? {
+    guard let externalParameter: ExternalParameter = try? defaultDecoder.decode(ExternalParameter.self, from: jsonData) else { return nil }
+    return externalParameter
   }
   
   // MARK: Custom Rules
