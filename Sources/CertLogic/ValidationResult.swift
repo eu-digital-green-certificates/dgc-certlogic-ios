@@ -18,11 +18,11 @@ enum Result: Int {
 
 class ValidationResult {
   
-  private var rule: Rule
+  private var rule: Rule?
   private var result: Result = .open
   private var validationErrors: [Error]?
   
-  init(rule: Rule,
+  init(rule: Rule?,
        result: Result = .open,
        validationErrors: [Error]? = nil) {
     self.rule = rule

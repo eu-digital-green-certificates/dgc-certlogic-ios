@@ -12,50 +12,88 @@ typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
 
 final class CertLogicEngine {
   
-  private var schema: String
+  private var schema: String = Constants.defSchemeVersion
   private var rules: [Rule]
   
-  init(schema: String, rules: [Rule]) {
-    self.schema = schema
+  init(rules: [Rule]) {
     self.rules = rules
   }
 
-  init(schema: String, rulesData: Data) {
-    self.schema = schema
+  init(rulesData: Data) {
     self.rules = CertLogicEngine.getRules(from: rulesData)
   }
 
-  init(schema: String, rulesJSONString: String) {
-    self.schema = schema
+  init(rulesJSONString: String) {
     self.rules = CertLogicEngine.getRules(from: rulesJSONString)
   }
 
-  func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
-      completion?([])
+  func validate(schema: String, external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
+    self.schema = schema
+    completion?([])
   }
 
-  func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
+  func validate(schema: String, external: ExternalParameter, payload: String) -> [ValidationResult] {
+    self.schema = schema
     var result: [ValidationResult] = []
-    getListOfRulesFor(countryCode: "UA").forEach { rule in
-      do {
-        let jsonlogic = try JsonLogic(rule.logic, customOperators: customRules)
-        let results: Any = try jsonlogic.applyRule(to: payload)
-        if results is Bool {
-          if results as! Bool {
-            result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
-          } else {
-            result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
+    let rulesItems = getListOfRulesFor(countryCode: "UA")
+    if(rules.count == 0) {
+      result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
+      return result
+    }
+    rulesItems.forEach { rule in
+      if !checkSchemeVersion(for: rule) {
+        result.append(ValidationResult(rule: rule, result: .open, validationErrors: nil))
+      } else {
+        do {
+          let jsonlogic = try JsonLogic(rule.logic, customOperators: customRules)
+          let results: Any = try jsonlogic.applyRule(to: getJSONStringForValidation(external: external, payload: payload))
+          if results is Bool {
+            if results as! Bool {
+              result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
+            } else {
+              result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
+            }
           }
+          print("result: \(result)")
+        } catch {
+          print("Unexpected error: \(error)")
+          result.append(ValidationResult(rule: rule, result: .fail, validationErrors: [error]))
         }
-        print("result: \(result)")
-      } catch {
-        print("Unexpected error: \(error)")
-        result.append(ValidationResult(rule: rule, result: .fail, validationErrors: [error]))
       }
     }
       return result
   }
 
+  // MARK: check scheme version from qr code and from rule
+  private func checkSchemeVersion(for rule: Rule) -> Bool {
+    if self.getVersion(from: self.schema) >= self.getVersion(from: rule.schemaVersion) {
+      return true
+    }
+    return false
+  }
+  
+  // MARK: calculate scheme version in Int "1.0.0" -> 100, "1.2.0" -> 120, 2.0.0 -> 200
+  private func getVersion(from schemeString: String) -> Int {
+    let codeVersionItems = schema.components(separatedBy: ".")
+    var version: Int = 0
+    for index in (codeVersionItems.count - 1)...0 {
+      let division = Int(pow(Double(10), Double(index)))
+      let forSum: Int = Int(codeVersionItems[index]) ?? 0 * division
+      version = version + forSum
+    }
+    return version
+  }
+  
+  // MARK:
+  private func getJSONStringForValidation(external: ExternalParameter, payload: String) -> String {
+    guard let jsonData = try? JSONEncoder().encode(external) else { return ""}
+    let externalJsonString = String(data: jsonData, encoding: .utf8)!
+    
+    var result = ""
+    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" +  "}," + "\"\(Constants.hCert)\":" + "\(payload)" + "}" + "}"
+    return result
+  }
+  
   // Get List of Rules for Country by Code
   private func getListOfRulesFor(countryCode: String) -> [Rule] {
     return rules.filter { rule in
@@ -110,4 +148,12 @@ final class CertLogicEngine {
           }
       }]
 
+}
+
+extension CertLogicEngine {
+  enum Constants {
+    static let hCert = "hcert"
+    static let external = "external"
+    static let defSchemeVersion = "1.0.0"
+  }
 }

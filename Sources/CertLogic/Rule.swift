@@ -16,7 +16,6 @@ class Rule: Codable {
   var type: String
   var version: String
   var schemaVersion: String
-  var engine: String
   var engineVersion: String
   var certificateType: String
   var description: [Description]
@@ -27,7 +26,7 @@ class Rule: Codable {
   var countryCode: String
   
   enum CodingKeys: String, CodingKey {
-    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", logic = "Logic", countryCode = "CountryCode"
+    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", logic = "Logic", countryCode = "CountryCode"
   }
   
   // Init with custom fields
@@ -35,7 +34,6 @@ class Rule: Codable {
        type: String,
        version: String,
        schemaVersion: String,
-       engine: String,
        engineVersion: String,
        certificateType: String,
        description: [Description],
@@ -48,7 +46,6 @@ class Rule: Codable {
     self.type = type
     self.version = version
     self.schemaVersion = schemaVersion
-    self.engine = engine
     self.engineVersion = engineVersion
     self.certificateType = certificateType
     self.description = description
@@ -66,7 +63,6 @@ class Rule: Codable {
     type = try container.decode(String.self, forKey: .type)
     version = try container.decode(String.self, forKey: .version)
     schemaVersion = try container.decode(String.self, forKey: .schemaVersion)
-    engine = try container.decode(String.self, forKey: .engine)
     engineVersion = try container.decode(String.self, forKey: .engineVersion)
     certificateType = try container.decode(String.self, forKey: .certificateType)
     description = try container.decode([Description].self, forKey: .description)
