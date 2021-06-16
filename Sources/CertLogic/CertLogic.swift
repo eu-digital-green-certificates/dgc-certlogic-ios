@@ -45,7 +45,9 @@ final class CertLogicEngine {
         result.append(ValidationResult(rule: rule, result: .open, validationErrors: nil))
       } else {
         do {
-          let jsonlogic = try JsonLogic(rule.logic, customOperators: customRules)
+          let json = JSON(rule.logic)
+          print("json: \(json)")
+          let jsonlogic = try JsonLogic(rule.logic.description)
           let results: Any = try jsonlogic.applyRule(to: getJSONStringForValidation(external: external, payload: payload))
           if results is Bool {
             if results as! Bool {
@@ -66,10 +68,16 @@ final class CertLogicEngine {
 
   // MARK: check scheme version from qr code and from rule
   private func checkSchemeVersion(for rule: Rule) -> Bool {
-    if self.getVersion(from: self.schema) >= self.getVersion(from: rule.schemaVersion) {
-      return true
+    //Check if major version more 1 skip this rule
+    guard abs(self.getVersion(from: self.schema) - self.getVersion(from: rule.schemaVersion)) < Constants.majorVersionForSkip else {
+      return false
     }
-    return false
+    //Check if QR code version great or equal of rule code, if no skiped this rule
+    // Scheme version of QR code always should be greate of equal of rule scheme version
+    guard self.getVersion(from: self.schema) >= self.getVersion(from: rule.schemaVersion) else {
+      return false
+    }
+    return true
   }
   
   // MARK: calculate scheme version in Int "1.0.0" -> 100, "1.2.0" -> 120, 2.0.0 -> 200
@@ -78,7 +86,7 @@ final class CertLogicEngine {
     var version: Int = 0
     let maxIndex = codeVersionItems.count - 1
     for index in 0...maxIndex {
-      let division = Int(pow(Double(10), Double(maxIndex - index)))
+      let division = Int(pow(Double(10), Double(Constants.maxVersion - index)))
       let calcVersion: Int = Int(codeVersionItems[index]) ?? 1
       let forSum: Int =  calcVersion * division
       version = version + forSum
@@ -92,7 +100,7 @@ final class CertLogicEngine {
     let externalJsonString = String(data: jsonData, encoding: .utf8)!
     
     var result = ""
-    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" +  "}," + "\"\(Constants.hCert)\":" + "\(payload)" + "}" + "}"
+    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "}," + "\"\(Constants.hCert)\":" + "\(payload)" + "}" + "}"
     return result
   }
   
@@ -135,32 +143,6 @@ final class CertLogicEngine {
     return externalParameter
   }
   
-  // MARK: Custom Rules
-  
-  let customRules =
-      ["plusDays": { (json: JSON?) -> JSON in
-          switch json {
-          case let .Array(array):
-              if let date = array[0].date, let daysToAdd = array[1].int {
-                  return JSON(date.date(byAddingDays: Int(daysToAdd)))
-              }
-              return JSON(0)
-          default:
-              return JSON(0)
-          }
-      },
-      "plusTime": { (json: JSON?) -> JSON in
-          switch json {
-          case let .Array(array):
-              if let date = array[0].date, let daysToAdd = array[1].int, let rule = array[2].string, rule == "day" {
-                  return JSON(date.date(byAddingDays: Int(daysToAdd)))
-              }
-              return JSON(0)
-          default:
-              return JSON(0)
-          }
-      }]
-
 }
 
 extension CertLogicEngine {
@@ -168,5 +150,7 @@ extension CertLogicEngine {
     static let hCert = "hcert"
     static let external = "external"
     static let defSchemeVersion = "1.0.0"
+    static let maxVersion: Int = 2
+    static let majorVersionForSkip: Int = 100
   }
 }

@@ -50,7 +50,7 @@
             "SchemaVersion": "1.0.0",
             "EngineVersion": "2.0.1",
             "Type": "Test",
-            "CertificateType": "CERTLOGIC",
+            "CertificateType": "Test",
             "CountryCode": "ua",
             "Description": [
               {
@@ -64,9 +64,13 @@
               "dt",
               "nm"
             ],
-            "Logic": "{\\\"and\\\":[{\\\">=\\\":[{\\\"var\\\":\\\"dt\\\"},\\\"23.12.2012\\\"]},{\\\">=\\\":[{\\\"var\\\":\\\"nm\\\"},\\\"ABC\\\"]}]}"
+            "Logic": {"and":[{">=":[{"var":"dt"},"23.12.2012"]},{">=":[{"var":"nm"},"ABC"]}]}
           }
           """
+
+          // "Logic": "{\\\"and\\\":[{\\\">=\\\":[{\\\"var\\\":\\\"dt\\\"},\\\"23.12.2012\\\"]},{\\\">=\\\":[{\\\"var\\\":\\\"nm\\\"},\\\"ABC\\\"]}]}"
+
+          
           if let rule = CertLogicEngine.getRule(from: jsonString), let externalParameter = CertLogicEngine.getExternalParameter(from: external) {
             let engine = CertLogicEngine(rules: [rule])
             let result = engine.validate(schema: "1.0.0", external: externalParameter, payload: payload)

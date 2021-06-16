@@ -7,6 +7,7 @@
 
 import Foundation
 import JSON
+import AnyCodable
 
 // MARK: Rule type
 
@@ -22,11 +23,11 @@ class Rule: Codable {
   var validFrom: String
   var validTo: String
   var affectedString: [String]
-  var logic: String
+  var logic: [String: Any]
   var countryCode: String
-  
+    
   enum CodingKeys: String, CodingKey {
-    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", logic = "Logic", countryCode = "CountryCode"
+    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
   }
   
   // Init with custom fields
@@ -40,7 +41,7 @@ class Rule: Codable {
        validFrom: String,
        validTo: String,
        affectedString: [String],
-       logic: String,
+       logic: [String: Any],
        countryCode: String) {
     self.identifier = identifier
     self.type = type
@@ -69,8 +70,24 @@ class Rule: Codable {
     validFrom = try container.decode(String.self, forKey: .validFrom)
     validTo = try container.decode(String.self, forKey: .validTo)
     affectedString = try container.decode([String].self, forKey: .affectedString)
-    logic = try container.decode(String.self, forKey: .logic)
+    logic = try container.decode([String: Any].self, forKey: .logic)
     countryCode = try container.decode(String.self, forKey: .countryCode)
   }
   
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(identifier, forKey: .identifier)
+    try container.encode(type, forKey: .type)
+    try container.encode(version, forKey: .version)
+    try container.encode(schemaVersion, forKey: .schemaVersion)
+    try container.encode(engineVersion, forKey: .engineVersion)
+    try container.encode(certificateType, forKey: .certificateType)
+    try container.encode(description, forKey: .description)
+    try container.encode(validFrom, forKey: .validFrom)
+    try container.encode(validTo, forKey: .validTo)
+    try container.encode(affectedString, forKey: .affectedString)
+    try container.encode(affectedString, forKey: .affectedString)
+  }
+  
 }
+
