@@ -6,10 +6,14 @@
 //
 
 import Foundation
-import JSON
-import AnyCodable
+import SwiftyJSON
 
 // MARK: Rule type
+
+enum RuleType: String {
+  case acceptence = "Acceptance"
+  case invalidation = "Invalidation"
+}
 
 class Rule: Codable {
   
@@ -23,8 +27,12 @@ class Rule: Codable {
   var validFrom: String
   var validTo: String
   var affectedString: [String]
-  var logic: [String: Any]
+  var logic: JSON
   var countryCode: String
+  
+  var ruleType: RuleType {
+    get { return RuleType.init(rawValue: type) ?? .acceptence }
+  }
     
   enum CodingKeys: String, CodingKey {
     case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
@@ -41,7 +49,7 @@ class Rule: Codable {
        validFrom: String,
        validTo: String,
        affectedString: [String],
-       logic: [String: Any],
+       logic: JSON,
        countryCode: String) {
     self.identifier = identifier
     self.type = type
@@ -70,7 +78,7 @@ class Rule: Codable {
     validFrom = try container.decode(String.self, forKey: .validFrom)
     validTo = try container.decode(String.self, forKey: .validTo)
     affectedString = try container.decode([String].self, forKey: .affectedString)
-    logic = try container.decode([String: Any].self, forKey: .logic)
+    logic = try container.decode(JSON.self, forKey: .logic)
     countryCode = try container.decode(String.self, forKey: .countryCode)
   }
   

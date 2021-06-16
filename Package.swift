@@ -16,17 +16,17 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-         .package(name: "jsonlogic", url: "https://github.com/eu-digital-green-certificates/json-logic-swift.git", from: "1.1.2"),
-      .package(name: "AnyCodable", url: "https://github.com/eu-digital-green-certificates/AnyCodable.git", from: "1.2.0")
+      .package(name: "jsonlogic", url: "https://github.com/eu-digital-green-certificates/json-logic-swift.git", from: "1.1.2"),
+      .package(name: "SwiftyJSON", url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "4.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CertLogic",
-          dependencies: ["jsonlogic", "AnyCodable"]),
+          dependencies: ["jsonlogic", "SwiftyJSON"]),
         .testTarget(
             name: "CertLogicTests",
-            dependencies: ["CertLogic", "jsonlogic", "AnyCodable"]),
+            dependencies: ["CertLogic", "jsonlogic", "SwiftyJSON"]),
     ]
 )
