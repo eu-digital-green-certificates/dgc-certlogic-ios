@@ -15,6 +15,13 @@ enum RuleType: String {
   case invalidation = "Invalidation"
 }
 
+enum CertificateType: String {
+  case general = "General"
+  case vactination = "Vactination"
+  case recovery = "Recovery"
+}
+
+
 class Rule: Codable {
   
   var identifier: String
@@ -33,7 +40,20 @@ class Rule: Codable {
   var ruleType: RuleType {
     get { return RuleType.init(rawValue: type) ?? .acceptence }
   }
+  
+  var certificateFullType: CertificateType {
+    get {  return CertificateType.init(rawValue: certificateType) ?? .general }
+  }
     
+  var validFromDate: Date {
+    get { return Date.backendFormatter.date(from: validFrom) ?? Date() }
+  }
+ 
+  var validToDate: Date {
+    get { return Date.backendFormatter.date(from: validTo) ?? Date() }
+  }
+
+  
   enum CodingKeys: String, CodingKey {
     case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
   }

@@ -16,6 +16,7 @@ class ExternalParameter: Codable {
   var countryCode: String
   var exp: Date
   var iat: Date
+  var certificationType: CertificateType = .general
   
   enum CodingKeys: String, CodingKey {
     case validationClock, valueSets, countryCode, exp, iat
@@ -25,12 +26,14 @@ class ExternalParameter: Codable {
        valueSets: Dictionary<String, [String]>,
        countryCode: String,
        exp: Date,
-       iat: Date) {
+       iat: Date,
+       certificationType: CertificateType) {
     self.validationClock = validationClock
     self.valueSets = valueSets
     self.countryCode = countryCode
     self.exp = exp
     self.iat = iat
+    self.certificationType = certificationType
   }
   
   required init(from decoder: Decoder) throws {

@@ -42,7 +42,7 @@ final class CertLogicEngine {
       return result
     }
 
-    let rulesItems = getListOfRulesFor(countryCode: external.countryCode, issuerCountryCode: qrCodeCountryCode)
+    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: qrCodeCountryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
@@ -109,14 +109,14 @@ final class CertLogicEngine {
     let externalJsonString = String(data: jsonData, encoding: .utf8)!
     
     var result = ""
-    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "}," + "\"\(Constants.hCert)\":" + "\(payload)" + "}" + "}"
+    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "}," + "\"\(Constants.payload)\":" + "\(payload)" + "}" + "}"
     return result
   }
   
   // Get List of Rules for Country by Code
-  private func getListOfRulesFor(countryCode: String, issuerCountryCode: String) -> [Rule] {
+  private func getListOfRulesFor(external: ExternalParameter, issuerCountryCode: String) -> [Rule] {
     return rules.filter { rule in
-      return rule.countryCode.lowercased() == countryCode.lowercased() && rule.ruleType == .acceptence || rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation
+      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence || rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == external.certificationType || rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
   }
 
@@ -156,7 +156,7 @@ final class CertLogicEngine {
 
 extension CertLogicEngine {
   enum Constants {
-    static let hCert = "hcert"
+    static let payload = "hcert"
     static let external = "external"
     static let defSchemeVersion = "1.0.0"
     static let maxVersion: Int = 2
