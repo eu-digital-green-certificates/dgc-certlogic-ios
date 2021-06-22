@@ -37,6 +37,7 @@ class Rule: Codable {
   var logic: JSON
   var countryCode: String
   var region: String?
+  var kid: String?
   
   var ruleType: RuleType {
     get { return RuleType.init(rawValue: type) ?? .acceptence }
