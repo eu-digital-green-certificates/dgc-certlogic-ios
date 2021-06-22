@@ -9,14 +9,14 @@ import Foundation
 
 // MARK: ExternalParameter type
 
-class ExternalParameter: Codable {
+public class ExternalParameter: Codable {
   
-  var validationClock: Date
-  var valueSets: Dictionary<String, [String]>
-  var countryCode: String
-  var exp: Date
-  var iat: Date
-  var certificationType: CertificateType = .general
+  public var validationClock: Date
+  public var valueSets: Dictionary<String, [String]>
+  public var countryCode: String
+  public var exp: Date
+  public var iat: Date
+  public var certificationType: CertificateType = .general
   
   enum CodingKeys: String, CodingKey {
     case validationClock, valueSets, countryCode, exp, iat

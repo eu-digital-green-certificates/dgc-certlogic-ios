@@ -9,10 +9,10 @@ import Foundation
 
 // MARK: Description type
 
-class Description: Codable {
+public class Description: Codable {
   
-  var lang: String
-  var desc: String
+  public var lang: String
+  public var desc: String
   
   enum CodingKeys: String, CodingKey {
     case lang = "lang", desc = "desc"

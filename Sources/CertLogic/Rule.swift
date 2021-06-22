@@ -10,61 +10,64 @@ import SwiftyJSON
 
 // MARK: Rule type
 
-enum RuleType: String {
+public enum RuleType: String {
   case acceptence = "Acceptance"
   case invalidation = "Invalidation"
 }
 
-enum CertificateType: String {
+public enum CertificateType: String {
   case general = "General"
-  case vactination = "Vactination"
+  case vacctination = "Vaccination"
   case recovery = "Recovery"
+  case test = "Test"
 }
 
 
-class Rule: Codable {
+public class Rule: Codable {
   
-  var identifier: String
-  var type: String
-  var version: String
-  var schemaVersion: String
-  var engineVersion: String
-  var certificateType: String
-  var description: [Description]
-  var validFrom: String
-  var validTo: String
-  var affectedString: [String]
-  var logic: JSON
-  var countryCode: String
-  var region: String?
-  var kid: String?
+  public var identifier: String
+  public var type: String
+  public var version: String
+  public var schemaVersion: String
+  public var engine: String
+  public var engineVersion: String
+  public var certificateType: String
+  public var description: [Description]
+  public var validFrom: String
+  public var validTo: String
+  public var affectedString: [String]
+  public var logic: JSON
+  public var countryCode: String
+  public var region: String?
+  public var kid: String?
   
-  var ruleType: RuleType {
+  public var ruleType: RuleType {
     get { return RuleType.init(rawValue: type) ?? .acceptence }
   }
   
-  var certificateFullType: CertificateType {
+  public var certificateFullType: CertificateType {
     get {  return CertificateType.init(rawValue: certificateType) ?? .general }
   }
     
-  var validFromDate: Date {
+  public var validFromDate: Date {
     get { return Date.backendFormatter.date(from: validFrom) ?? Date() }
   }
  
-  var validToDate: Date {
+  public var validToDate: Date {
     get { return Date.backendFormatter.date(from: validTo) ?? Date() }
   }
 
   
   enum CodingKeys: String, CodingKey {
-    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
+    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
   }
   
   // Init with custom fields
-  init(identifier: String,
+  public init(identifier: String,
        type: String,
        version: String,
        schemaVersion: String,
+       engine: String,
        engineVersion: String,
        certificateType: String,
        description: [Description],
@@ -77,6 +80,7 @@ class Rule: Codable {
     self.type = type
     self.version = version
     self.schemaVersion = schemaVersion
+    self.engine = engine
     self.engineVersion = engineVersion
     self.certificateType = certificateType
     self.description = description
@@ -88,12 +92,13 @@ class Rule: Codable {
   }
   
   // Init Rule from JSON Data
-  required init(from decoder: Decoder) throws {
+  required public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     identifier = try container.decode(String.self, forKey: .identifier)
     type = try container.decode(String.self, forKey: .type)
     version = try container.decode(String.self, forKey: .version)
     schemaVersion = try container.decode(String.self, forKey: .schemaVersion)
+    engine = try container.decode(String.self, forKey: .engine)
     engineVersion = try container.decode(String.self, forKey: .engineVersion)
     certificateType = try container.decode(String.self, forKey: .certificateType)
     description = try container.decode([Description].self, forKey: .description)
@@ -104,12 +109,13 @@ class Rule: Codable {
     countryCode = try container.decode(String.self, forKey: .countryCode)
   }
   
-  func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(identifier, forKey: .identifier)
     try container.encode(type, forKey: .type)
     try container.encode(version, forKey: .version)
     try container.encode(schemaVersion, forKey: .schemaVersion)
+    try container.encode(engine, forKey: .engine)
     try container.encode(engineVersion, forKey: .engineVersion)
     try container.encode(certificateType, forKey: .certificateType)
     try container.encode(description, forKey: .description)

@@ -8,7 +8,7 @@ import Foundation
 
 // MARK: Result type
 
-enum Result: Int {
+public enum Result: Int {
   case passed = 0
   case fail
   case open
@@ -16,13 +16,13 @@ enum Result: Int {
 
 // MARK: ValidationResult
 
-class ValidationResult {
+public class ValidationResult {
   
-  private var rule: Rule?
-  private var result: Result = .open
-  private var validationErrors: [Error]?
+  public var rule: Rule?
+  public var result: Result = .open
+  public var validationErrors: [Error]?
   
-  init(rule: Rule?,
+  public init(rule: Rule?,
        result: Result = .open,
        validationErrors: [Error]? = nil) {
     self.rule = rule

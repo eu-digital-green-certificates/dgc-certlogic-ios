@@ -10,31 +10,31 @@ import Foundation
 
 typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
 
-final class CertLogicEngine {
+final public class CertLogicEngine {
   
   private var schema: JSON?
   private var rules: [Rule]
   
-  init(schema: String, rules: [Rule]) {
+  public init(schema: String, rules: [Rule]) {
     self.schema = JSON(parseJSON: schema)
     self.rules = rules
   }
 
-  init(schema: String, rulesData: Data) {
+  public init(schema: String, rulesData: Data) {
     self.schema = JSON(parseJSON: schema)
     self.rules = CertLogicEngine.getRules(from: rulesData)
   }
 
-  init(schema: String, rulesJSONString: String) {
+  public init(schema: String, rulesJSONString: String) {
     self.schema = JSON(parseJSON: schema)
     self.rules = CertLogicEngine.getRules(from: rulesJSONString)
   }
 
-  func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
+  public func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
     completion?([])
   }
 
-  func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
+  public func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
     let payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
     guard let qrCodeCountryCode = payloadJSON["v"][0]["co"].rawValue as? String else {
@@ -121,33 +121,33 @@ final class CertLogicEngine {
   }
 
   // Parce Rules from Data or JSON String
-  static func getRules(from jsonString: String) -> [Rule] {
+  static public func getRules(from jsonString: String) -> [Rule] {
     guard let jsonData = jsonString.data(using: .utf8) else { return []}
     return getRules(from: jsonData)
   }
 
-  static func getRules(from jsonData: Data) -> [Rule] {
+  static public func getRules(from jsonData: Data) -> [Rule] {
     guard let rules: [Rule] = try? defaultDecoder.decode([Rule].self, from: jsonData) else { return [] }
     return rules
   }
 
-  static func getRule(from jsonString: String) -> Rule? {
+  static public func getRule(from jsonString: String) -> Rule? {
     guard let jsonData = jsonString.data(using: .utf8) else { return nil}
     return getRule(from: jsonData)
   }
 
-  static func getRule(from jsonData: Data) -> Rule? {
+  static public func getRule(from jsonData: Data) -> Rule? {
     guard let rule: Rule = try? defaultDecoder.decode(Rule.self, from: jsonData) else { return nil }
     return rule
   }
 
   // Parce external parameters
-  static func getExternalParameter(from jsonString: String) -> ExternalParameter? {
+  static public func getExternalParameter(from jsonString: String) -> ExternalParameter? {
     guard let jsonData = jsonString.data(using: .utf8) else { return nil}
     return getExternalParameter(from: jsonData)
   }
 
-  static func getExternalParameter(from jsonData: Data) -> ExternalParameter? {
+  static public func getExternalParameter(from jsonData: Data) -> ExternalParameter? {
     guard let externalParameter: ExternalParameter = try? defaultDecoder.decode(ExternalParameter.self, from: jsonData) else { return nil }
     return externalParameter
   }
@@ -156,7 +156,7 @@ final class CertLogicEngine {
 
 extension CertLogicEngine {
   enum Constants {
-    static let payload = "hcert"
+    static let payload = "payload"
     static let external = "external"
     static let defSchemeVersion = "1.0.0"
     static let maxVersion: Int = 2
