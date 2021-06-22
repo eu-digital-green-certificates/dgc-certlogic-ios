@@ -8,7 +8,7 @@ import jsonlogic
 import SwiftyJSON
 import Foundation
 
-typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
+public typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
 
 final public class CertLogicEngine {
   

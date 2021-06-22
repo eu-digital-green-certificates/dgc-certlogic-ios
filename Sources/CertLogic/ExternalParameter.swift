@@ -22,7 +22,7 @@ public class ExternalParameter: Codable {
     case validationClock, valueSets, countryCode, exp, iat
   }
   
-  init(validationClock: Date,
+  public init(validationClock: Date,
        valueSets: Dictionary<String, [String]>,
        countryCode: String,
        exp: Date,
@@ -36,7 +36,7 @@ public class ExternalParameter: Codable {
     self.certificationType = certificationType
   }
   
-  required init(from decoder: Decoder) throws {
+  required public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     validationClock = try container.decode(Date.self, forKey: .validationClock)
     valueSets = try container.decode(Dictionary<String, [String]>.self, forKey: .valueSets)
