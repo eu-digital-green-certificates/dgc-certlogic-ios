@@ -17,7 +17,8 @@ public class ExternalParameter: Codable {
   public var exp: Date
   public var iat: Date
   public var certificationType: CertificateType = .general
-  
+  public var kid: String?
+
   enum CodingKeys: String, CodingKey {
     case validationClock, valueSets, countryCode, exp, iat
   }

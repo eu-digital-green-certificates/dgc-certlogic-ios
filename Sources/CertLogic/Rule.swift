@@ -39,7 +39,6 @@ public class Rule: Codable {
   public var logic: JSON
   public var countryCode: String
   public var region: String?
-  public var kid: String?
   public var hash: String?
   
   public var ruleType: RuleType {
@@ -60,7 +59,7 @@ public class Rule: Codable {
 
   
   enum CodingKeys: String, CodingKey {
-    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "CountryCode", logic = "Logic"
+    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "Country", logic = "Logic"
   }
   
   // Init with custom fields
