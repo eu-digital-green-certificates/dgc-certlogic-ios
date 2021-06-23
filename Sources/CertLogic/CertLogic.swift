@@ -30,6 +30,10 @@ final public class CertLogicEngine {
     self.rules = CertLogicEngine.getRules(from: rulesJSONString)
   }
 
+  public func updateRules(rules: [Rule]) {
+    self.rules = rules
+  }
+  
   public func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
     completion?([])
   }
