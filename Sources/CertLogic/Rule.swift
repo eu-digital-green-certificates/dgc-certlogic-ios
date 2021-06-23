@@ -128,3 +128,46 @@ public class Rule: Codable {
   
 }
 
+public class RuleHash: Codable {
+  
+  public var identifier: String
+  public var version: String
+  public var country: String
+  public var hash: String
+  
+  enum CodingKeys: String, CodingKey {
+    case identifier, version, country, hash
+  }
+  
+  // Init with custom fields
+  public init(identifier: String,
+       type: String,
+       version: String,
+       country: String,
+       hash: String) {
+    self.identifier = identifier
+    self.version = version
+    self.country = country
+    self.hash = hash
+  }
+  
+  // Init Rule from JSON Data
+  required public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    identifier = try container.decode(String.self, forKey: .identifier)
+    version = try container.decode(String.self, forKey: .version)
+    country = try container.decode(String.self, forKey: .country)
+    hash = try container.decode(String.self, forKey: .hash)
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(identifier, forKey: .identifier)
+    try container.encode(version, forKey: .version)
+    try container.encode(country, forKey: .country)
+    try container.encode(hash, forKey: .hash)
+  }
+  
+}
+
+
