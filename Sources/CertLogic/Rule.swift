@@ -62,6 +62,11 @@ public class Rule: Codable {
     case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "Country", logic = "Logic"
   }
   
+  // Set Hash of JSON string
+  public func setHash(hash: String) {
+    self.hash = hash
+  }
+ 
   // Init with custom fields
   public init(identifier: String,
        type: String,
