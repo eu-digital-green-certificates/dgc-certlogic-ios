@@ -152,6 +152,28 @@ final public class CertLogicEngine {
     return externalParameter
   }
   
+  // Parce Rules from Data or JSON String
+  static public func getRuleHashes(from jsonString: String) -> [RuleHash] {
+    guard let jsonData = jsonString.data(using: .utf8) else { return []}
+    return getRulesHashes(from: jsonData)
+  }
+
+  static public func getRulesHashes(from jsonData: Data) -> [RuleHash] {
+    guard let rulesHashes: [RuleHash] = try? defaultDecoder.decode([RuleHash].self, from: jsonData) else { return [] }
+    return rulesHashes
+  }
+
+  static public func getRuleHash(from jsonString: String) -> RuleHash? {
+    guard let jsonData = jsonString.data(using: .utf8) else { return nil}
+    return getRuleHash(from: jsonData)
+  }
+
+  static public func getRuleHash(from jsonData: Data) -> RuleHash? {
+    guard let ruleHash: RuleHash = try? defaultDecoder.decode(RuleHash.self, from: jsonData) else { return nil }
+    return ruleHash
+  }
+
+  
 }
 
 extension CertLogicEngine {
