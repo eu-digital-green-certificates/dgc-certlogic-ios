@@ -40,6 +40,7 @@ public class Rule: Codable {
   public var countryCode: String
   public var region: String?
   public var kid: String?
+  public var hash: String?
   
   public var ruleType: RuleType {
     get { return RuleType.init(rawValue: type) ?? .acceptence }
