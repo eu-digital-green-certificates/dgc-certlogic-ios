@@ -14,7 +14,13 @@ public class ValueSet: Codable {
   public var valueSetId: String
   public var valueSetDate: String
   public var valueSetValues: Dictionary<String, ValueSetItem>
-    
+  public var hash: String?
+  
+  // Set Hash of JSON string
+  public func setHash(hash: String) {
+    self.hash = hash
+  }
+  
   enum CodingKeys: String, CodingKey {
     case valueSetId, valueSetDate, valueSetValues
   }
