@@ -382,10 +382,11 @@ final class CertLogicTests: XCTestCase {
               "Identifier": "GR-CZ-0001",
               "Version": "1.0.0",
               "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
               "EngineVersion": "2.0.1",
               "Type": "Acceptance",
               "CertificateType": "Test",
-              "CountryCode": "ua",
+              "Country": "ua",
               "Description": [
                 {
                   "lang": "en",
@@ -404,10 +405,11 @@ final class CertLogicTests: XCTestCase {
               "Identifier": "GR-UA-0002",
               "Version": "1.0.0",
               "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
               "EngineVersion": "2.0.1",
               "Type": "Acceptance",
               "CertificateType": "Test",
-              "CountryCode": "ua",
+              "Country": "ua",
               "Description": [
                 {
                   "lang": "en",
@@ -426,10 +428,11 @@ final class CertLogicTests: XCTestCase {
               "Identifier": "GR-UA-0003",
               "Version": "1.0.0",
               "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
               "EngineVersion": "2.0.1",
               "Type": "Acceptance",
               "CertificateType": "Test",
-              "CountryCode": "ua",
+              "Country": "ua",
               "Description": [
                 {
                   "lang": "en",
@@ -448,10 +451,11 @@ final class CertLogicTests: XCTestCase {
               "Identifier": "GR-UA-0004",
               "Version": "1.0.0",
               "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
               "EngineVersion": "2.0.1",
               "Type": "Invalidation",
               "CertificateType": "Test",
-              "CountryCode": "ua",
+              "Country": "ua",
               "Description": [
                 {
                   "lang": "en",
@@ -469,11 +473,106 @@ final class CertLogicTests: XCTestCase {
           ]
           """
         
+    let valueSetString =
+    """
+    {
+      "valueSetId": "vaccines-covid-19-names",
+      "valueSetDate": "2021-04-27",
+      "valueSetValues": {
+        "EU/1/20/1528": {
+          "display": "Comirnaty",
+          "lang": "en",
+          "active": true,
+          "system": "https://ec.europa.eu/health/documents/community-register/html/",
+          "version": ""
+        },
+        "EU/1/20/1507": {
+          "display": "COVID-19 Vaccine Moderna",
+          "lang": "en",
+          "active": true,
+          "system": "https://ec.europa.eu/health/documents/community-register/html/",
+          "version": ""
+        },
+        "EU/1/21/1529": {
+          "display": "Vaxzevria",
+          "lang": "en",
+          "active": true,
+          "system": "https://ec.europa.eu/health/documents/community-register/html/",
+          "version": ""
+        },
+        "EU/1/20/1525": {
+          "display": "COVID-19 Vaccine Janssen",
+          "lang": "en",
+          "active": true,
+          "system": "https://ec.europa.eu/health/documents/community-register/html/",
+          "version": ""
+        },
+        "CVnCoV": {
+          "display": "CVnCoV",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "Sputnik-V": {
+          "display": "Sputnik-V",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "Convidecia": {
+          "display": "Convidecia",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "EpiVacCorona": {
+          "display": "EpiVacCorona",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "BBIBP-CorV": {
+          "display": "BBIBP-CorV",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "Inactivated-SARS-CoV-2-Vero-Cell": {
+          "display": "Inactivated SARS-CoV-2 (Vero Cell)",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "CoronaVac": {
+          "display": "CoronaVac",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        },
+        "Covaxin": {
+          "display": "Covaxin (also known as BBV152 A, B, C)",
+          "lang": "en",
+          "active": true,
+          "system": "http://ec.europa.eu/temp/vaccineproductname",
+          "version": "1.0"
+        }
+      }
+    }
+    """
+    
         // "Logic": "{\\\"and\\\":[{\\\">=\\\":[{\\\"var\\\":\\\"dt\\\"},\\\"23.12.2012\\\"]},{\\\">=\\\":[{\\\"var\\\":\\\"nm\\\"},\\\"ABC\\\"]}]}"
         
         
-        if let externalParameter = CertLogicEngine.getExternalParameter(from: external) {
-          let rules = CertLogicEngine.getRules(from: jsonString)
+    if let externalParameter: ExternalParameter = CertLogicEngine.getItem(from: external) {
+          let rules: [Rule] = CertLogicEngine.getItems(from: jsonString)
+          let valueSet: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
           let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: rules)
           let result = engine.validate(external: externalParameter, payload: payload)
           print("rules: \(rules) \n externalParameter: \(externalParameter) \n result: \(result)")

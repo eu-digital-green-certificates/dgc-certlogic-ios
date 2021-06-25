@@ -9,6 +9,7 @@ import SwiftyJSON
 import Foundation
 
 public typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
+public typealias Codable = Decodable & Encodable
 
 final public class CertLogicEngine {
   
@@ -22,22 +23,18 @@ final public class CertLogicEngine {
 
   public init(schema: String, rulesData: Data) {
     self.schema = JSON(parseJSON: schema)
-    self.rules = CertLogicEngine.getRules(from: rulesData)
+    self.rules = CertLogicEngine.getItems(from: rulesData)
   }
 
   public init(schema: String, rulesJSONString: String) {
     self.schema = JSON(parseJSON: schema)
-    self.rules = CertLogicEngine.getRules(from: rulesJSONString)
+    self.rules = CertLogicEngine.getItems(from: rulesJSONString)
   }
 
   public func updateRules(rules: [Rule]) {
     self.rules = rules
   }
   
-  public func validate(external: ExternalParameter, payload: String, completion: CompletionHandler? ) {
-    completion?([])
-  }
-
   public func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
     let payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
@@ -124,60 +121,23 @@ final public class CertLogicEngine {
     }
   }
 
-  // Parce Rules from Data or JSON String
-  static public func getRules(from jsonString: String) -> [Rule] {
+  static public func getItems<T:Decodable>(from jsonString: String) -> [T] {
     guard let jsonData = jsonString.data(using: .utf8) else { return []}
-    return getRules(from: jsonData)
+    return getItems(from: jsonData)
+  }
+  static public func getItems<T:Decodable>(from jsonData: Data) -> [T] {
+    guard let items: [T] = try? defaultDecoder.decode([T].self, from: jsonData) else { return [] }
+    return items
   }
 
-  static public func getRules(from jsonData: Data) -> [Rule] {
-    guard let rules: [Rule] = try? defaultDecoder.decode([Rule].self, from: jsonData) else { return [] }
-    return rules
-  }
-
-  static public func getRule(from jsonString: String) -> Rule? {
+  static public func getItem<T:Decodable>(from jsonString: String) -> T? {
     guard let jsonData = jsonString.data(using: .utf8) else { return nil}
-    return getRule(from: jsonData)
+    return getItem(from: jsonData)
   }
-
-  static public func getRule(from jsonData: Data) -> Rule? {
-    guard let rule: Rule = try? defaultDecoder.decode(Rule.self, from: jsonData) else { return nil }
-    return rule
-  }
-
-  // Parce external parameters
-  static public func getExternalParameter(from jsonString: String) -> ExternalParameter? {
-    guard let jsonData = jsonString.data(using: .utf8) else { return nil}
-    return getExternalParameter(from: jsonData)
-  }
-
-  static public func getExternalParameter(from jsonData: Data) -> ExternalParameter? {
-    guard let externalParameter: ExternalParameter = try? defaultDecoder.decode(ExternalParameter.self, from: jsonData) else { return nil }
-    return externalParameter
-  }
-  
-  // Parce Rules from Data or JSON String
-  static public func getRuleHashes(from jsonString: String) -> [RuleHash] {
-    guard let jsonData = jsonString.data(using: .utf8) else { return []}
-    return getRulesHashes(from: jsonData)
-  }
-
-  static public func getRulesHashes(from jsonData: Data) -> [RuleHash] {
-    guard let rulesHashes: [RuleHash] = try? defaultDecoder.decode([RuleHash].self, from: jsonData) else { return [] }
-    return rulesHashes
-  }
-
-  static public func getRuleHash(from jsonString: String) -> RuleHash? {
-    guard let jsonData = jsonString.data(using: .utf8) else { return nil}
-    return getRuleHash(from: jsonData)
-  }
-
-  static public func getRuleHash(from jsonData: Data) -> RuleHash? {
-    guard let ruleHash: RuleHash = try? defaultDecoder.decode(RuleHash.self, from: jsonData) else { return nil }
-    return ruleHash
-  }
-
-  
+  static public func getItem<T:Decodable>(from jsonData: Data) -> T? {
+    guard let item: T = try? defaultDecoder.decode(T.self, from: jsonData) else { return nil }
+    return item
+  }  
 }
 
 extension CertLogicEngine {
