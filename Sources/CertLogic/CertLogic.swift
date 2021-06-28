@@ -61,7 +61,7 @@ final public class CertLogicEngine {
           let results: Any = try jsonlogic.applyRule(to: getJSONStringForValidation(external: external, payload: payload))
           if results is Bool {
             if results as! Bool {
-              result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
+              result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             } else {
               result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
@@ -137,7 +137,22 @@ final public class CertLogicEngine {
   static public func getItem<T:Decodable>(from jsonData: Data) -> T? {
     guard let item: T = try? defaultDecoder.decode(T.self, from: jsonData) else { return nil }
     return item
-  }  
+  }
+  
+  // Get details rule error by affected fields
+  func getDetailsOfError(rule: Rule) -> String {
+    var value: String = ""
+    rule.affectedString.forEach { key in
+      if let newValue = schema?[key] {
+        if value.count == 0 {
+          value = value + "\(newValue)"
+        } else {
+          value = value + "/" + "\(newValue)"
+        }
+      }
+    }
+    return value
+  }
 }
 
 extension CertLogicEngine {

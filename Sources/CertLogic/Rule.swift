@@ -22,6 +22,10 @@ public enum CertificateType: String {
   case test = "Test"
 }
 
+fileprivate enum Constants {
+  static let defLanguage = "EN"
+  static let unknownError = "Unknown error"
+}
 
 public class Rule: Codable {
   
@@ -69,6 +73,28 @@ public class Rule: Codable {
         version = version + forSum
       }
       return version
+    }
+  }
+  
+  public func getLocalizedErrorString(locale: String) -> String {
+    let filtered = self.description.filter { description in
+      description.lang.lowercased() == locale.lowercased()
+    }
+    if(filtered.count == 0) {
+      let defFiltered = self.description.filter { description in
+        description.lang.lowercased() == Constants.defLanguage.lowercased()
+      }
+      if defFiltered.count == 0 {
+        if self.description.count == 0 {
+          return Constants.unknownError
+        } else {
+          return self.description[0].desc
+        }
+      } else {
+        return defFiltered[0].desc
+      }
+    } else {
+      return filtered[0].desc
     }
   }
   
