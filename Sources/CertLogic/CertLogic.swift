@@ -140,7 +140,7 @@ final public class CertLogicEngine {
   }
   
   // Get details rule error by affected fields
-  func getDetailsOfError(rule: Rule) -> String {
+  public func getDetailsOfError(rule: Rule) -> String {
     var value: String = ""
     rule.affectedString.forEach { key in
       if let newValue = schema?[key] {
