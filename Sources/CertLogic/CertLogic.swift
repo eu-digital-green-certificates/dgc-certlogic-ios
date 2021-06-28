@@ -153,7 +153,7 @@ final public class CertLogicEngine {
       if external.certificationType == .test {
         section = "test_entry"
       }
-      if let newValue = schema?["$defs"][section]["properties"][key]["description"] as? String {
+      if let newValue = schema?["$defs"][section]["properties"][key]["description"].string {
         if value.count == 0 {
           value = value + "\(newValue)"
         } else {
