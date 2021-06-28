@@ -140,10 +140,20 @@ final public class CertLogicEngine {
   }
   
   // Get details rule error by affected fields
-  public func getDetailsOfError(rule: Rule) -> String {
+  public func getDetailsOfError(rule: Rule, external: ExternalParameter) -> String {
     var value: String = ""
     rule.affectedString.forEach { key in
-      if let newValue = schema?[key]["description"] {
+      var section = "test_entry"
+      if external.certificationType == .recovery {
+        section = "recovery_entry"
+      }
+      if external.certificationType == .vacctination {
+        section = "vaccination_entry"
+      }
+      if external.certificationType == .test {
+        section = "test_entry"
+      }
+      if let newValue = schema?["$defs"][section]["properties"][key]["description"] as? String {
         if value.count == 0 {
           value = value + "\(newValue)"
         } else {
