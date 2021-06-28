@@ -61,7 +61,7 @@ final public class CertLogicEngine {
           let results: Any = try jsonlogic.applyRule(to: getJSONStringForValidation(external: external, payload: payload))
           if results is Bool {
             if results as! Bool {
-              result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
+              result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
             } else {
               result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
@@ -157,7 +157,7 @@ final public class CertLogicEngine {
         if value.count == 0 {
           value = value + "\(newValue)"
         } else {
-          value = value + "/" + "\(newValue)"
+          value = value + " / " + "\(newValue)"
         }
       }
     }
