@@ -143,7 +143,7 @@ final public class CertLogicEngine {
   public func getDetailsOfError(rule: Rule) -> String {
     var value: String = ""
     rule.affectedString.forEach { key in
-      if let newValue = schema?[key] {
+      if let newValue = schema?[key]["description"] {
         if value.count == 0 {
           value = value + "\(newValue)"
         } else {
