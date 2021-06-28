@@ -56,7 +56,21 @@ public class Rule: Codable {
   public var validToDate: Date {
     get { return Date.backendFormatter.date(from: validTo) ?? Date() }
   }
-
+  
+  public var versionInt: Int {
+    get {
+      let codeVersionItems = version.components(separatedBy: ".")
+      var version: Int = 0
+      let maxIndex = codeVersionItems.count - 1
+      for index in 0...maxIndex {
+        let division = Int(pow(Double(10), Double(2 - index)))
+        let calcVersion: Int = Int(codeVersionItems[index]) ?? 1
+        let forSum: Int =  calcVersion * division
+        version = version + forSum
+      }
+      return version
+    }
+  }
   
   enum CodingKeys: String, CodingKey {
     case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "Country", logic = "Logic"
