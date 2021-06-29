@@ -62,9 +62,7 @@ final public class CertLogicEngine {
               result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
           }
-          print("result: \(result)")
         } catch {
-          print("Unexpected error: \(error)")
           result.append(ValidationResult(rule: rule, result: .fail, validationErrors: [error]))
         }
       }
