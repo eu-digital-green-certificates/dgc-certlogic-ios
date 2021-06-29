@@ -38,12 +38,8 @@ final public class CertLogicEngine {
   public func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
     let payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
-    guard let qrCodeCountryCode = payloadJSON["v"][0]["co"].rawValue as? String else {
-      result.append(ValidationResult(rule: nil, result: .fail, validationErrors: nil))
-      return result
-    }
 
-    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: qrCodeCountryCode)
+    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issueCountryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
