@@ -181,7 +181,8 @@ public class Rule: Codable {
     try container.encode(validFrom, forKey: .validFrom)
     try container.encode(validTo, forKey: .validTo)
     try container.encode(affectedString, forKey: .affectedString)
-    try container.encode(affectedString, forKey: .affectedString)
+    try container.encode(logic, forKey: .logic)
+    try container.encode(countryCode, forKey: .countryCode)
   }
   
 }
