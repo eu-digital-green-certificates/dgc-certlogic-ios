@@ -54,7 +54,7 @@ final public class CertLogicEngine {
     }
     rulesItems.forEach { rule in
       if !checkSchemeVersion(for: rule, qrCodeSchemeVersion: qrCodeSchemeVersion) {
-        result.append(ValidationResult(rule: rule, result: .open, validationErrors: nil))
+        result.append(ValidationResult(rule: rule, result: .open, validationErrors: [CertLogicError.openState]))
       } else {
         do {
           let jsonlogic = try JsonLogic(rule.logic.description)
@@ -90,13 +90,13 @@ final public class CertLogicEngine {
     return true
   }
   
-  // MARK: calculate scheme version in Int "1.0.0" -> 100, "1.2.0" -> 120, 2.0.0 -> 200
+  // MARK: calculate scheme version in Int "1.0.0" -> 10000, "1.2.0" -> 10200, 2.0.1 -> 20001
   private func getVersion(from schemeString: String) -> Int {
     let codeVersionItems = schemeString.components(separatedBy: ".")
     var version: Int = 0
     let maxIndex = codeVersionItems.count - 1
     for index in 0...maxIndex {
-      let division = Int(pow(Double(10), Double(Constants.maxVersion - index)))
+      let division = Int(pow(Double(100), Double(Constants.maxVersion - index)))
       let calcVersion: Int = Int(codeVersionItems[index]) ?? 1
       let forSum: Int =  calcVersion * division
       version = version + forSum
@@ -116,9 +116,53 @@ final public class CertLogicEngine {
   
   // Get List of Rules for Country by Code
   private func getListOfRulesFor(external: ExternalParameter, issuerCountryCode: String) -> [Rule] {
-    return rules.filter { rule in
-      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence || rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == external.certificationType || rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+    var returnedRulesItems: [Rule] = []
+    let generalRulesWithAcceptence = rules.filter { rule in
+      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
+    let generalRulesWithInvalidation = rules.filter { rule in
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+    }
+    //General Rule with Acceptence type and max Version number
+    if generalRulesWithAcceptence.count > 0 {
+       if let maxRules = generalRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
+          return ruleOne.versionInt < ruleTwo.versionInt
+       }) {
+        returnedRulesItems.append( maxRules)
+       }
+    }
+    //General Rule with Invalidation type and max Version number
+    if generalRulesWithInvalidation.count > 0 {
+       if let maxRules = generalRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
+          return ruleOne.versionInt < ruleTwo.versionInt
+       }) {
+        returnedRulesItems.append( maxRules)
+       }
+    }
+    let certTypeRulesWithAcceptence = rules.filter { rule in
+      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+    }
+    let certTypeRulesWithInvalidation = rules.filter { rule in
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+    }
+
+    //Rule with CertificationType with Acceptence type and max Version number
+    if certTypeRulesWithAcceptence.count > 0 {
+       if let maxRules = certTypeRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
+          return ruleOne.versionInt < ruleTwo.versionInt
+       }) {
+        returnedRulesItems.append( maxRules)
+       }
+    }
+    //Rule with CertificationType with Invalidation type and max Version number
+    if certTypeRulesWithInvalidation.count > 0 {
+       if let maxRules = certTypeRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
+          return ruleOne.versionInt < ruleTwo.versionInt
+       }) {
+        returnedRulesItems.append( maxRules)
+       }
+    }
+    return returnedRulesItems
   }
 
   static public func getItems<T:Decodable>(from jsonString: String) -> [T] {
@@ -143,34 +187,61 @@ final public class CertLogicEngine {
   public func getDetailsOfError(rule: Rule, external: ExternalParameter) -> String {
     var value: String = ""
     rule.affectedString.forEach { key in
-      var section = "test_entry"
-      if external.certificationType == .recovery {
-        section = "recovery_entry"
+      var keyToGetValue: String? = nil
+      let arrayKeys = key.components(separatedBy: ".")
+      // For affected fields like "ma"
+      if arrayKeys.count == 0 {
+        keyToGetValue = key
       }
-      if external.certificationType == .vacctination {
-        section = "vaccination_entry"
+      // For affected fields like r.0.fr
+      if arrayKeys.count == 3 {
+        keyToGetValue = arrayKeys.last
       }
-      if external.certificationType == .test {
-        section = "test_entry"
-      }
-      if let newValue = schema?["$defs"][section]["properties"][key]["description"].string {
-        if value.count == 0 {
-          value = value + "\(newValue)"
-        } else {
-          value = value + " / " + "\(newValue)"
+      // All other keys will skiped (example: "r.0")
+      if let keyToGetValue = keyToGetValue {
+        if let newValue = self.getValueFromSchemeBy(external: external, key: keyToGetValue) {
+          if value.count == 0 {
+            value = value + "\(newValue)"
+          } else {
+            value = value + " / " + "\(newValue)"
+          }
         }
       }
     }
     return value
   }
+  
+  private func getValueFromSchemeBy(external: ExternalParameter, key: String) -> String? {
+    var section = Constants.testEntry
+    if external.certificationType == .recovery {
+      section = Constants.recoveryEntry
+    }
+    if external.certificationType == .vacctination {
+      section = Constants.vaccinationEntry
+    }
+    if external.certificationType == .test {
+      section = Constants.testEntry
+    }
+    if let newValue = schema?[Constants.schemeDefsSection][section][Constants.properties][key][Constants.description].string {
+      return newValue
+    }
+    return nil
+  }
+  
 }
 
 extension CertLogicEngine {
-  enum Constants {
+  private enum Constants {
     static let payload = "payload"
     static let external = "external"
     static let defSchemeVersion = "1.0.0"
     static let maxVersion: Int = 2
-    static let majorVersionForSkip: Int = 100
+    static let majorVersionForSkip: Int = 10000
+    static let testEntry = "test_entry"
+    static let vaccinationEntry = "vaccination_entry"
+    static let recoveryEntry = "recovery_entry"
+    static let schemeDefsSection = "$defs"
+    static let properties = "properties"
+    static let description = "description"
   }
 }
