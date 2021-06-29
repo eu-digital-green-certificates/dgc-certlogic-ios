@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "CertLogic",
+  defaultLocalization: "en",
   platforms: [
     .macOS(.v10_13), .iOS(.v11), .tvOS(.v9), .watchOS(.v2)
   ],
@@ -24,7 +25,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CertLogic",
-          dependencies: ["jsonlogic", "SwiftyJSON"]),
+          dependencies: ["jsonlogic", "SwiftyJSON"],
+          resources: [.process("Resources")]),
         .testTarget(
             name: "CertLogicTests",
             dependencies: ["CertLogic", "jsonlogic", "SwiftyJSON"]),

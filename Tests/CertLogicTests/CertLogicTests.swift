@@ -344,8 +344,8 @@ final class CertLogicTests: XCTestCase {
               "valueSets": {
               },
               "countryCode": "ua",
-              "exp": "2021-06-14T17:07:36.622",
-              "iat": "2021-06-14T17:07:36.622"
+              "exp": "2021-07-14T17:07:36.622",
+              "iat": "2021-05-14T17:07:36.622"
           }
         """
         
@@ -375,7 +375,7 @@ final class CertLogicTests: XCTestCase {
             }
           """
         
-        let jsonString =
+        let rulesString =
           """
           [
             {
@@ -393,15 +393,60 @@ final class CertLogicTests: XCTestCase {
                   "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
                 }
               ],
-              "ValidFrom": "2021-05-27T07:46:40Z",
-              "ValidTo": "2021-06-01T07:46:40Z",
+              "ValidFrom": "2021-05-27T00:00:00Z",
+              "ValidTo": "2021-08-01T00:00:00Z",
               "AffectedFields": [
                 "dt",
                 "nm"
               ],
               "Logic": {"and":[{">=":[{"var":"dt"},"23.12.2012"]},{">=":[{"var":"nm"},"ABC"]}]}
           },
-            {
+          {
+              "Identifier": "GR-CZ-0001",
+              "Version": "1.0.0",
+              "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
+              "EngineVersion": "2.0.1",
+              "Type": "Acceptance",
+              "CertificateType": "General",
+              "Country": "ua",
+              "Description": [
+                {
+                  "lang": "en",
+                  "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
+                }
+              ],
+              "ValidFrom": "2021-05-27T00:00:00Z",
+              "ValidTo": "2021-08-01T00:00:00Z",
+              "AffectedFields": [
+                "dt",
+                "nm"
+              ],
+              "Logic": {"and":[{">=":[{"var":"dt"},"23.12.2012"]},{">=":[{"var":"nm"},"ABC"]}]}
+          },
+          {
+              "Identifier": "GR-CZ-0001",
+              "Version": "1.1.0",
+              "SchemaVersion": "1.0.0",
+              "Engine": "CERTLOGIC",
+              "EngineVersion": "2.0.1",
+              "Type": "Acceptance",
+              "CertificateType": "General",
+              "Country": "ua",
+              "Description": [
+                {
+                  "lang": "en",
+                  "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
+                }
+              ],
+              "ValidFrom": "2021-05-27T00:00:00Z",
+              "ValidTo": "2021-08-01T00:00:00Z",
+              "AffectedFields": [
+                "dt",
+                "nm"
+              ],
+              "Logic": {"and":[{">=":[{"var":"dt"},"23.12.2012"]},{">=":[{"var":"nm"},"ABC"]}]}
+          },{
               "Identifier": "GR-UA-0002",
               "Version": "1.0.0",
               "SchemaVersion": "1.0.0",
@@ -416,8 +461,8 @@ final class CertLogicTests: XCTestCase {
                   "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
                 }
               ],
-              "ValidFrom": "2021-05-27T07:46:40Z",
-              "ValidTo": "2021-06-01T07:46:40Z",
+              "ValidFrom": "2021-05-27T00:00:00Z",
+              "ValidTo": "2021-08-01T0T00:00:00Z",
               "AffectedFields": [
                 "dt",
                 "nm"
@@ -439,8 +484,8 @@ final class CertLogicTests: XCTestCase {
                   "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
                 }
               ],
-              "ValidFrom": "2021-05-27T07:46:40Z",
-              "ValidTo": "2021-06-01T07:46:40Z",
+          "ValidFrom": "2021-05-01T00:00:00Z",
+          "ValidTo": "2030-06-01T00:00:00Z",
               "AffectedFields": [
                 "dt",
                 "nm"
@@ -462,8 +507,8 @@ final class CertLogicTests: XCTestCase {
                   "desc": "The Field “Doses” MUST contain number 2 OR 2/2."
                 }
               ],
-              "ValidFrom": "2021-05-27T07:46:40Z",
-              "ValidTo": "2021-06-01T07:46:40Z",
+          "ValidFrom": "2021-05-01T00:00:00Z",
+          "ValidTo": "2030-06-01T00:00:00Z",
               "AffectedFields": [
                 "dt",
                 "nm"
@@ -571,7 +616,7 @@ final class CertLogicTests: XCTestCase {
         
         
     if let externalParameter: ExternalParameter = CertLogicEngine.getItem(from: external) {
-          let rules: [Rule] = CertLogicEngine.getItems(from: jsonString)
+          let rules: [Rule] = CertLogicEngine.getItems(from: rulesString)
           let valueSet: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
           let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: rules)
           let result = engine.validate(external: externalParameter, payload: payload)

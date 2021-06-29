@@ -24,7 +24,9 @@ public enum CertificateType: String {
 
 fileprivate enum Constants {
   static let defLanguage = "EN"
-  static let unknownError = "Unknown error"
+  static let unknownError = NSLocalizedString("unknown_error", comment: "Packege unknown error")
+  static let maxVersion = 2
+  static let zero = 0
 }
 
 public class Rule: Codable {
@@ -54,20 +56,32 @@ public class Rule: Codable {
   }
     
   public var validFromDate: Date {
-    get { return Date.backendFormatter.date(from: validFrom) ?? Date() }
+    get {
+      if let date = Date.backendFormatter.date(from: validFrom) { return date }
+      if let date = Date.isoFormatter.date(from: validFrom) { return date }
+      if let date = Date.iso8601Full.date(from: validFrom) { return date }
+      if let date = Date.isoFormatterNotFull.date(from: validFrom) { return date }
+      return Date()
+    }
   }
  
   public var validToDate: Date {
-    get { return Date.backendFormatter.date(from: validTo) ?? Date() }
+    get {
+      if let date = Date.backendFormatter.date(from: validTo) { return date }
+      if let date = Date.isoFormatter.date(from: validTo) { return date }
+      if let date = Date.iso8601Full.date(from: validTo) { return date }
+      if let date = Date.isoFormatterNotFull.date(from: validTo) { return date }
+      return Date()
+    }
   }
   
   public var versionInt: Int {
     get {
       let codeVersionItems = version.components(separatedBy: ".")
-      var version: Int = 0
+      var version: Int = Constants.zero
       let maxIndex = codeVersionItems.count - 1
-      for index in 0...maxIndex {
-        let division = Int(pow(Double(10), Double(2 - index)))
+      for index in Constants.zero...maxIndex {
+        let division = Int(pow(Double(100), Double(Constants.maxVersion - index)))
         let calcVersion: Int = Int(codeVersionItems[index]) ?? 1
         let forSum: Int =  calcVersion * division
         version = version + forSum
@@ -80,21 +94,21 @@ public class Rule: Codable {
     let filtered = self.description.filter { description in
       description.lang.lowercased() == locale.lowercased()
     }
-    if(filtered.count == 0) {
+    if(filtered.count == Constants.zero) {
       let defFiltered = self.description.filter { description in
         description.lang.lowercased() == Constants.defLanguage.lowercased()
       }
-      if defFiltered.count == 0 {
-        if self.description.count == 0 {
+      if defFiltered.count == Constants.zero {
+        if self.description.count == Constants.zero {
           return Constants.unknownError
         } else {
-          return self.description[0].desc
+          return self.description[Constants.zero].desc
         }
       } else {
-        return defFiltered[0].desc
+        return defFiltered[Constants.zero].desc
       }
     } else {
-      return filtered[0].desc
+      return filtered[Constants.zero].desc
     }
   }
   
