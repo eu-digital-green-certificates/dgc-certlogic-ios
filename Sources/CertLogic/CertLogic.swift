@@ -59,11 +59,11 @@ final public class CertLogicEngine {
             if results as! Bool {
               result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
             } else {
-              result.append(ValidationResult(rule: rule, result: .open, validationErrors: nil))
+              result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
           }
         } catch {
-          result.append(ValidationResult(rule: rule, result: .fail, validationErrors: [error]))
+          result.append(ValidationResult(rule: rule, result: .open, validationErrors: [error]))
         }
       }
     }

@@ -19,9 +19,10 @@ public class ExternalParameter: Codable {
   public var iat: Date
   public var certificationType: CertificateType = .general
   public var kid: String?
+  public var region: String?
 
   enum CodingKeys: String, CodingKey {
-    case validationClock, valueSets, countryCode, exp, iat, issueCountryCode
+    case validationClock, valueSets, countryCode, exp, iat, issueCountryCode, kid, region
   }
   
   public init(validationClock: Date,
@@ -30,7 +31,8 @@ public class ExternalParameter: Codable {
        exp: Date,
        iat: Date,
        certificationType: CertificateType,
-       issueCountryCode: String) {
+       issueCountryCode: String,
+       region: String? = nil) {
     self.validationClock = validationClock
     self.valueSets = valueSets
     self.countryCode = countryCode
@@ -38,6 +40,7 @@ public class ExternalParameter: Codable {
     self.iat = iat
     self.certificationType = certificationType
     self.issueCountryCode = issueCountryCode
+    self.region = region
   }
   
   required public init(from decoder: Decoder) throws {
@@ -48,5 +51,7 @@ public class ExternalParameter: Codable {
     exp = try container.decode(Date.self, forKey: .exp)
     iat = try container.decode(Date.self, forKey: .iat)
     issueCountryCode = try container.decode(String.self, forKey: .issueCountryCode)
+    kid = try? container.decode(String.self, forKey: .kid)
+    region = try? container.decode(String.self, forKey: .region)
   }
 }

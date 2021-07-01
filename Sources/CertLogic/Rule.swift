@@ -113,7 +113,20 @@ public class Rule: Codable {
   }
   
   enum CodingKeys: String, CodingKey {
-    case identifier = "Identifier", type = "Type", version = "Version", schemaVersion = "SchemaVersion", engine = "Engine", engineVersion = "EngineVersion", certificateType = "CertificateType", description = "Description", validFrom = "ValidFrom", validTo = "ValidTo", affectedString = "AffectedFields", countryCode = "Country", logic = "Logic"
+    case identifier = "Identifier",
+         type = "Type",
+         version = "Version",
+         schemaVersion = "SchemaVersion",
+         engine = "Engine",
+         engineVersion = "EngineVersion",
+         certificateType = "CertificateType",
+         description = "Description",
+         validFrom = "ValidFrom",
+         validTo = "ValidTo",
+         affectedString = "AffectedFields",
+         countryCode = "Country",
+         logic = "Logic",
+         region
   }
   
   // Set Hash of JSON string
@@ -134,7 +147,8 @@ public class Rule: Codable {
        validTo: String,
        affectedString: [String],
        logic: JSON,
-       countryCode: String) {
+       countryCode: String,
+       region: String? = nil) {
     self.identifier = identifier
     self.type = type
     self.version = version
@@ -148,6 +162,7 @@ public class Rule: Codable {
     self.affectedString = affectedString
     self.logic = logic
     self.countryCode = countryCode
+    self.region = region
   }
   
   // Init Rule from JSON Data
@@ -166,6 +181,7 @@ public class Rule: Codable {
     affectedString = try container.decode([String].self, forKey: .affectedString)
     logic = try container.decode(JSON.self, forKey: .logic)
     countryCode = try container.decode(String.self, forKey: .countryCode)
+    region = try? container.decode(String.self, forKey: .region)
   }
   
   public func encode(to encoder: Encoder) throws {
@@ -183,6 +199,7 @@ public class Rule: Codable {
     try container.encode(affectedString, forKey: .affectedString)
     try container.encode(logic, forKey: .logic)
     try container.encode(countryCode, forKey: .countryCode)
+    try container.encode(region, forKey: .region)
   }
   
 }
