@@ -59,11 +59,11 @@ final public class CertLogicEngine {
             if results as! Bool {
               result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
             } else {
-              result.append(ValidationResult(rule: rule, result: .open, validationErrors: nil))
+              result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
           }
         } catch {
-          result.append(ValidationResult(rule: rule, result: .fail, validationErrors: [error]))
+          result.append(ValidationResult(rule: rule, result: .open, validationErrors: [error]))
         }
       }
     }
@@ -111,12 +111,24 @@ final public class CertLogicEngine {
   // Get List of Rules for Country by Code
   private func getListOfRulesFor(external: ExternalParameter, issuerCountryCode: String) -> [Rule] {
     var returnedRulesItems: [Rule] = []
-    let generalRulesWithAcceptence = rules.filter { rule in
+    var generalRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
-    let generalRulesWithInvalidation = rules.filter { rule in
+    if let region = external.region {
+      generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    }
+    
+    var generalRulesWithInvalidation = rules.filter { rule in
       return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
+    if let region = external.region {
+      generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    }
+
     //General Rule with Acceptence type and max Version number
     if generalRulesWithAcceptence.count > 0 {
        if let maxRules = generalRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
@@ -133,11 +145,22 @@ final public class CertLogicEngine {
         returnedRulesItems.append( maxRules)
        }
     }
-    let certTypeRulesWithAcceptence = rules.filter { rule in
+    var certTypeRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
-    let certTypeRulesWithInvalidation = rules.filter { rule in
+    if let region = external.region {
+      certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    }
+
+    var certTypeRulesWithInvalidation = rules.filter { rule in
       return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+    }
+    if let region = external.region {
+      certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
     }
 
     //Rule with CertificationType with Acceptence type and max Version number
