@@ -118,6 +118,10 @@ final public class CertLogicEngine {
       generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
+    } else {
+      generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
+        rule.region == nil
+      }
     }
     
     var generalRulesWithInvalidation = rules.filter { rule in
@@ -126,6 +130,10 @@ final public class CertLogicEngine {
     if let region = external.region {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
+        rule.region == nil
       }
     }
 
@@ -152,6 +160,10 @@ final public class CertLogicEngine {
       certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
+    } else {
+      certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
+        rule.region == nil
+      }
     }
 
     var certTypeRulesWithInvalidation = rules.filter { rule in
@@ -160,6 +172,10 @@ final public class CertLogicEngine {
     if let region = external.region {
       certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
+        rule.region == nil
       }
     }
 
