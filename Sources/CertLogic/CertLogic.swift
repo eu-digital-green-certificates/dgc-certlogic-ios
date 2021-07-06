@@ -256,6 +256,9 @@ final public class CertLogicEngine {
     if let newValue = self.payloadJSON?[section][0][key].string {
       return newValue
     }
+    if let newValue = self.payloadJSON?[section][0][key].number {
+      return newValue.stringValue
+    }
     return nil
   }
 
