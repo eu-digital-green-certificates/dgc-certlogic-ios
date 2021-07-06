@@ -105,7 +105,7 @@ final public class CertLogicEngine {
     let externalJsonString = String(data: jsonData, encoding: .utf8)!
     
     var result = ""
-    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "}," + "\"\(Constants.payload)\":" + "\(payload)" + "}" + "}"
+    result = "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "," + "\"\(Constants.payload)\":" + "\(payload)"  + "}"
     return result
   }
   
