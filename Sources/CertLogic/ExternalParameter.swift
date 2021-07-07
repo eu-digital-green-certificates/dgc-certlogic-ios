@@ -32,7 +32,8 @@ public class ExternalParameter: Codable {
        iat: Date,
        certificationType: CertificateType,
        issueCountryCode: String,
-       region: String? = nil) {
+       region: String? = nil,
+       kid: String?) {
     self.validationClock = validationClock
     self.valueSets = valueSets
     self.countryCode = countryCode
@@ -41,6 +42,7 @@ public class ExternalParameter: Codable {
     self.certificationType = certificationType
     self.issueCountryCode = issueCountryCode
     self.region = region
+    self.kid = kid
   }
   
   required public init(from decoder: Decoder) throws {
