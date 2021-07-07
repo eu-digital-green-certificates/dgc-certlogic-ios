@@ -40,7 +40,7 @@ final public class CertLogicEngine {
     self.payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
-    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issueCountryCode)
+    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issuerCountryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
@@ -137,23 +137,28 @@ final public class CertLogicEngine {
         rule.region == nil
       }
     }
+    
+    let groupedGeneralRulesWithInvalidation = generalRulesWithInvalidation.group(by: \.identifier)
+    let groupedGeneralRulesWithAcceptence = generalRulesWithAcceptence.group(by: \.identifier)
 
-    //General Rule with Acceptence type and max Version number
-    if generalRulesWithAcceptence.count > 0 {
-       if let maxRules = generalRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
+    //General Rule with Acceptence type and max Version number grouped by Identifier
+    groupedGeneralRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedGeneralRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
     }
-    //General Rule with Invalidation type and max Version number
-    if generalRulesWithInvalidation.count > 0 {
-       if let maxRules = generalRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
+    groupedGeneralRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedGeneralRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
     }
+
     var certTypeRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
@@ -180,22 +185,26 @@ final public class CertLogicEngine {
       }
     }
 
-    //Rule with CertificationType with Acceptence type and max Version number
-    if certTypeRulesWithAcceptence.count > 0 {
-       if let maxRules = certTypeRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
+    let groupedCertTypeRulesWithAcceptence = certTypeRulesWithAcceptence.group(by: \.identifier)
+    let groupedCertTypeRulesWithInvalidation = certTypeRulesWithInvalidation.group(by: \.identifier)
+
+    groupedCertTypeRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
     }
-    //Rule with CertificationType with Invalidation type and max Version number
-    if certTypeRulesWithInvalidation.count > 0 {
-       if let maxRules = certTypeRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
+    groupedCertTypeRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
     }
+
     return returnedRulesItems
   }
 
@@ -246,7 +255,7 @@ final public class CertLogicEngine {
     if external.certificationType == .recovery {
       section = Constants.recoveryEntry
     }
-    if external.certificationType == .vacctination {
+    if external.certificationType == .vaccination {
       section = Constants.vaccinationEntry
     }
     if external.certificationType == .test {
@@ -263,7 +272,7 @@ final public class CertLogicEngine {
     if external.certificationType == .recovery {
       section = Constants.payloadRecoveryEntry
     }
-    if external.certificationType == .vacctination {
+    if external.certificationType == .vaccination {
       section = Constants.payloadVaccinationEntry
     }
     if external.certificationType == .test {
