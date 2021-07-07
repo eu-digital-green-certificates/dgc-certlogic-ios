@@ -40,7 +40,7 @@ final public class CertLogicEngine {
     self.payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
-    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issueCountryCode)
+    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issuerCountryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
