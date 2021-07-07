@@ -9,8 +9,8 @@ import Foundation
 // MARK: Result type
 
 public enum Result: Int {
-  case passed = 0
-  case fail
+  case fail = 0
+  case passed
   case open
 }
 
