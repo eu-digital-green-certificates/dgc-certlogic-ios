@@ -137,7 +137,29 @@ final public class CertLogicEngine {
         rule.region == nil
       }
     }
+    
+    let groupedGeneralRulesWithInvalidation = generalRulesWithInvalidation.group(by: \.identifier)
+    let groupedGeneralRulesWithAcceptence = generalRulesWithAcceptence.group(by: \.identifier)
 
+    //General Rule with Acceptence type and max Version number grouped by Identifier
+    groupedGeneralRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedGeneralRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+    groupedGeneralRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedGeneralRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+
+/*
     //General Rule with Acceptence type and max Version number
     if generalRulesWithAcceptence.count > 0 {
        if let maxRules = generalRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
@@ -154,6 +176,7 @@ final public class CertLogicEngine {
         returnedRulesItems.append( maxRules)
        }
     }
+ */
     var certTypeRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
@@ -180,6 +203,27 @@ final public class CertLogicEngine {
       }
     }
 
+    let groupedCertTypeRulesWithAcceptence = certTypeRulesWithAcceptence.group(by: \.identifier)
+    let groupedCertTypeRulesWithInvalidation = certTypeRulesWithInvalidation.group(by: \.identifier)
+
+    groupedCertTypeRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+    groupedCertTypeRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+
+    /*
     //Rule with CertificationType with Acceptence type and max Version number
     if certTypeRulesWithAcceptence.count > 0 {
        if let maxRules = certTypeRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
@@ -196,6 +240,7 @@ final public class CertLogicEngine {
         returnedRulesItems.append( maxRules)
        }
     }
+  */
     return returnedRulesItems
   }
 
