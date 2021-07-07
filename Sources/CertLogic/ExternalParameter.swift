@@ -33,7 +33,7 @@ public class ExternalParameter: Codable {
        certificationType: CertificateType,
        issueCountryCode: String,
        region: String? = nil,
-       kid: String?) {
+       kid: String? = nil) {
     self.validationClock = validationClock
     self.valueSets = valueSets
     self.countryCode = countryCode
