@@ -14,6 +14,7 @@ public typealias Codable = Decodable & Encodable
 final public class CertLogicEngine {
   
   private var schema: JSON?
+  private var payloadJSON: JSON?
   private var rules: [Rule]
   
   public init(schema: String, rules: [Rule]) {
@@ -36,7 +37,7 @@ final public class CertLogicEngine {
   }
   
   public func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
-    let payloadJSON = JSON(parseJSON: payload)
+    self.payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
     let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issueCountryCode)
@@ -44,7 +45,7 @@ final public class CertLogicEngine {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
     }
-    guard let qrCodeSchemeVersion = payloadJSON["ver"].rawValue as? String else {
+    guard let qrCodeSchemeVersion = self.payloadJSON?["ver"].rawValue as? String else {
       result.append(ValidationResult(rule: nil, result: .fail, validationErrors: nil))
       return result
     }
@@ -104,7 +105,7 @@ final public class CertLogicEngine {
     let externalJsonString = String(data: jsonData, encoding: .utf8)!
     
     var result = ""
-    result = "{" + "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "}," + "\"\(Constants.payload)\":" + "\(payload)" + "}" + "}"
+    result = "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "," + "\"\(Constants.payload)\":" + "\(payload)"  + "}"
     return result
   }
   
@@ -201,8 +202,8 @@ final public class CertLogicEngine {
   }
   
   // Get details rule error by affected fields
-  public func getDetailsOfError(rule: Rule, external: ExternalParameter) -> String {
-    var value: String = ""
+  public func getDetailsOfError(rule: Rule, external: ExternalParameter) -> Dictionary<String, String> {
+    var result: Dictionary<String, String> = Dictionary()
     rule.affectedString.forEach { key in
       var keyToGetValue: String? = nil
       let arrayKeys = key.components(separatedBy: ".")
@@ -216,16 +217,12 @@ final public class CertLogicEngine {
       }
       // All other keys will skiped (example: "r.0")
       if let keyToGetValue = keyToGetValue {
-        if let newValue = self.getValueFromSchemeBy(external: external, key: keyToGetValue) {
-          if value.count == 0 {
-            value = value + "\(newValue)"
-          } else {
-            value = value + " / " + "\(newValue)"
-          }
+        if let newValue = self.getValueFromSchemeBy(external: external, key: keyToGetValue), let newPayloadValue = self.getValueFromPayloadBy(external: external, key: keyToGetValue) {
+          result[newValue] = newPayloadValue
         }
       }
     }
-    return value
+    return result
   }
   
   private func getValueFromSchemeBy(external: ExternalParameter, key: String) -> String? {
@@ -245,6 +242,27 @@ final public class CertLogicEngine {
     return nil
   }
   
+  private func getValueFromPayloadBy(external: ExternalParameter, key: String) -> String? {
+    var section = Constants.payloadTestEntry
+    if external.certificationType == .recovery {
+      section = Constants.payloadRecoveryEntry
+    }
+    if external.certificationType == .vacctination {
+      section = Constants.payloadVaccinationEntry
+    }
+    if external.certificationType == .test {
+      section = Constants.payloadTestEntry
+    }
+    if let newValue = self.payloadJSON?[section][0][key].string {
+      return newValue
+    }
+    if let newValue = self.payloadJSON?[section][0][key].number {
+      return newValue.stringValue
+    }
+    return nil
+  }
+
+  
 }
 
 extension CertLogicEngine {
@@ -254,11 +272,17 @@ extension CertLogicEngine {
     static let defSchemeVersion = "1.0.0"
     static let maxVersion: Int = 2
     static let majorVersionForSkip: Int = 10000
+
     static let testEntry = "test_entry"
     static let vaccinationEntry = "vaccination_entry"
     static let recoveryEntry = "recovery_entry"
+    //Schema section
     static let schemeDefsSection = "$defs"
     static let properties = "properties"
     static let description = "description"
+    //Payload section
+    static let payloadTestEntry = "t"
+    static let payloadVaccinationEntry = "v"
+    static let payloadRecoveryEntry = "r"
   }
 }
