@@ -230,7 +230,7 @@ final public class CertLogicEngine {
     if external.certificationType == .recovery {
       section = Constants.recoveryEntry
     }
-    if external.certificationType == .vacctination {
+    if external.certificationType == .vaccination {
       section = Constants.vaccinationEntry
     }
     if external.certificationType == .test {
@@ -247,7 +247,7 @@ final public class CertLogicEngine {
     if external.certificationType == .recovery {
       section = Constants.payloadRecoveryEntry
     }
-    if external.certificationType == .vacctination {
+    if external.certificationType == .vaccination {
       section = Constants.payloadVaccinationEntry
     }
     if external.certificationType == .test {

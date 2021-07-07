@@ -17,7 +17,7 @@ public enum RuleType: String {
 
 public enum CertificateType: String {
   case general = "General"
-  case vacctination = "Vaccination"
+  case vaccination = "Vaccination"
   case recovery = "Recovery"
   case test = "Test"
 }
