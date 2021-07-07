@@ -159,24 +159,6 @@ final public class CertLogicEngine {
       }
     }
 
-/*
-    //General Rule with Acceptence type and max Version number
-    if generalRulesWithAcceptence.count > 0 {
-       if let maxRules = generalRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
-    }
-    //General Rule with Invalidation type and max Version number
-    if generalRulesWithInvalidation.count > 0 {
-       if let maxRules = generalRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
-    }
- */
     var certTypeRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
     }
@@ -223,24 +205,6 @@ final public class CertLogicEngine {
       }
     }
 
-    /*
-    //Rule with CertificationType with Acceptence type and max Version number
-    if certTypeRulesWithAcceptence.count > 0 {
-       if let maxRules = certTypeRulesWithAcceptence.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
-    }
-    //Rule with CertificationType with Invalidation type and max Version number
-    if certTypeRulesWithInvalidation.count > 0 {
-       if let maxRules = certTypeRulesWithInvalidation.max(by: { (ruleOne, ruleTwo) -> Bool in
-          return ruleOne.versionInt < ruleTwo.versionInt
-       }) {
-        returnedRulesItems.append( maxRules)
-       }
-    }
-  */
     return returnedRulesItems
   }
 
