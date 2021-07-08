@@ -62,6 +62,8 @@ final public class CertLogicEngine {
             } else {
               result.append(ValidationResult(rule: rule, result: .fail, validationErrors: nil))
             }
+          } else {
+            result.append(ValidationResult(rule: rule, result: .open, validationErrors: [CertLogicError.openState]))
           }
         } catch {
           result.append(ValidationResult(rule: rule, result: .open, validationErrors: [error]))

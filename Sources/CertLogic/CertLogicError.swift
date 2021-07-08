@@ -20,7 +20,7 @@ extension CertLogicError: CustomStringConvertible {
         case .openState:
             return NSLocalizedString(
               "recheck_rule",
-              comment: "Invalid Password"
+              comment: "Open state"
           )
         case .unexpected(_):
             return NSLocalizedString(
@@ -36,7 +36,7 @@ extension CertLogicError: LocalizedError {
         case .openState:
             return NSLocalizedString(
                 "recheck_rule",
-                comment: "Invalid Password"
+                comment: "Open state"
             )
         case .unexpected(_):
           return NSLocalizedString(
