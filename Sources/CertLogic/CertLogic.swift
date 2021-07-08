@@ -8,7 +8,6 @@ import jsonlogic
 import SwiftyJSON
 import Foundation
 
-public typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
 public typealias Codable = Decodable & Encodable
 
 final public class CertLogicEngine {
@@ -288,8 +287,6 @@ final public class CertLogicEngine {
     }
     return nil
   }
-
-  
 }
 
 extension CertLogicEngine {
