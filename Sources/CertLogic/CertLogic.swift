@@ -8,7 +8,6 @@ import jsonlogic
 import SwiftyJSON
 import Foundation
 
-public typealias CompletionHandler = (_ resutls: [ValidationResult]) -> Void
 public typealias Codable = Decodable & Encodable
 
 final public class CertLogicEngine {
@@ -36,11 +35,11 @@ final public class CertLogicEngine {
     self.rules = rules
   }
   
-  public func validate(external: ExternalParameter, payload: String) -> [ValidationResult] {
+  public func validate(filter: FilterParameter, external: ExternalParameter, payload: String) -> [ValidationResult] {
     self.payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
-    let rulesItems = getListOfRulesFor(external: external, issuerCountryCode: external.issuerCountryCode)
+    let rulesItems = getListOfRulesFor(filter: filter, issuerCountryCode: external.issuerCountryCode)
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
@@ -112,12 +111,12 @@ final public class CertLogicEngine {
   }
   
   // Get List of Rules for Country by Code
-  private func getListOfRulesFor(external: ExternalParameter, issuerCountryCode: String) -> [Rule] {
+  private func getListOfRulesFor(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
     var returnedRulesItems: [Rule] = []
     var generalRulesWithAcceptence = rules.filter { rule in
-      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+      return rule.countryCode.lowercased() == filter.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
-    if let region = external.region {
+    if let region = filter.region {
       generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -128,9 +127,9 @@ final public class CertLogicEngine {
     }
     
     var generalRulesWithInvalidation = rules.filter { rule in
-      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
-    if let region = external.region {
+    if let region = filter.region {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -162,9 +161,9 @@ final public class CertLogicEngine {
     }
 
     var certTypeRulesWithAcceptence = rules.filter { rule in
-      return rule.countryCode.lowercased() == external.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+      return rule.countryCode.lowercased() == filter.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
-    if let region = external.region {
+    if let region = filter.region {
       certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -175,9 +174,9 @@ final public class CertLogicEngine {
     }
 
     var certTypeRulesWithInvalidation = rules.filter { rule in
-      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == external.certificationType && external.validationClock >= rule.validFromDate && external.validationClock <= rule.validToDate
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
-    if let region = external.region {
+    if let region = filter.region {
       certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -229,7 +228,7 @@ final public class CertLogicEngine {
   }
   
   // Get details rule error by affected fields
-  public func getDetailsOfError(rule: Rule, external: ExternalParameter) -> Dictionary<String, String> {
+  public func getDetailsOfError(rule: Rule, filter: FilterParameter) -> Dictionary<String, String> {
     var result: Dictionary<String, String> = Dictionary()
     rule.affectedString.forEach { key in
       var keyToGetValue: String? = nil
@@ -244,7 +243,7 @@ final public class CertLogicEngine {
       }
       // All other keys will skiped (example: "r.0")
       if let keyToGetValue = keyToGetValue {
-        if let newValue = self.getValueFromSchemeBy(external: external, key: keyToGetValue), let newPayloadValue = self.getValueFromPayloadBy(external: external, key: keyToGetValue) {
+        if let newValue = self.getValueFromSchemeBy(filter: filter, key: keyToGetValue), let newPayloadValue = self.getValueFromPayloadBy(filter: filter, key: keyToGetValue) {
           result[newValue] = newPayloadValue
         }
       }
@@ -252,15 +251,15 @@ final public class CertLogicEngine {
     return result
   }
   
-  private func getValueFromSchemeBy(external: ExternalParameter, key: String) -> String? {
+  private func getValueFromSchemeBy(filter: FilterParameter, key: String) -> String? {
     var section = Constants.testEntry
-    if external.certificationType == .recovery {
+    if filter.certificationType == .recovery {
       section = Constants.recoveryEntry
     }
-    if external.certificationType == .vaccination {
+    if filter.certificationType == .vaccination {
       section = Constants.vaccinationEntry
     }
-    if external.certificationType == .test {
+    if filter.certificationType == .test {
       section = Constants.testEntry
     }
     if let newValue = schema?[Constants.schemeDefsSection][section][Constants.properties][key][Constants.description].string {
@@ -269,15 +268,15 @@ final public class CertLogicEngine {
     return nil
   }
   
-  private func getValueFromPayloadBy(external: ExternalParameter, key: String) -> String? {
+  private func getValueFromPayloadBy(filter: FilterParameter, key: String) -> String? {
     var section = Constants.payloadTestEntry
-    if external.certificationType == .recovery {
+    if filter.certificationType == .recovery {
       section = Constants.payloadRecoveryEntry
     }
-    if external.certificationType == .vaccination {
+    if filter.certificationType == .vaccination {
       section = Constants.payloadVaccinationEntry
     }
-    if external.certificationType == .test {
+    if filter.certificationType == .test {
       section = Constants.payloadTestEntry
     }
     if let newValue = self.payloadJSON?[section][0][key].string {
@@ -288,8 +287,6 @@ final public class CertLogicEngine {
     }
     return nil
   }
-
-  
 }
 
 extension CertLogicEngine {
