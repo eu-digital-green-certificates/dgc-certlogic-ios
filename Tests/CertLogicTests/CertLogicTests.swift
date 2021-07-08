@@ -616,15 +616,16 @@ final class CertLogicTests: XCTestCase {
         
         
     if let externalParameter: ExternalParameter = CertLogicEngine.getItem(from: external) {
-          let rules: [Rule] = CertLogicEngine.getItems(from: rulesString)
-          let valueSet: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
-          let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: rules)
-          let result = engine.validate(external: externalParameter, payload: payload)
-          print("rules: \(rules) \n externalParameter: \(externalParameter) \n result: \(result)")
-          
-        } else
-        { XCTestError.self }
-        //            XCTAssertEqual(CertLogic().text, "Hello, World!")
+      let rules: [Rule] = CertLogicEngine.getItems(from: rulesString)
+      let valueSet: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
+      let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: rules)
+      let filter = FilterParameter(validationClock: Date(), countryCode: "UA", certificationType: .vaccination)
+      let result = engine.validate(filter: filter, external: externalParameter, payload: payload)
+      print("rules: \(rules) \n externalParameter: \(externalParameter) \n result: \(result)")
+      
+    } else
+    { XCTestError.self }
+    //            XCTAssertEqual(CertLogic().text, "Hello, World!")
     }
 }
     
