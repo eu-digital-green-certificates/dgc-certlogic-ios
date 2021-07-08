@@ -347,7 +347,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleVersioning()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -360,7 +362,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter, external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -370,7 +372,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleVersioningNegative()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -383,7 +387,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -393,7 +397,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleVersioningWithMultipleVersions()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -418,7 +424,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -428,7 +434,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleWrongEngine()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "MYENGINE", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -437,7 +445,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -447,7 +455,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleSchemaVersioning()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.4.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -464,7 +474,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2,rule3])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.3.0"}
                                                                   """)
         
@@ -486,7 +496,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testWrongEngineVersion()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "MYENGINE", engineVersion: "8.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -495,7 +507,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter, external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -505,7 +517,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleWrongSchema()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "8.0.0", engine: "MYENGINE", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -514,7 +528,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -524,7 +538,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleLogicError()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -533,7 +549,7 @@ final class RuleEngineTests: XCTestCase {
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter, external: external, payload: """
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
@@ -543,7 +559,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testSimpleRuleSuccessFullExecution()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -552,7 +570,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -562,7 +580,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testMixedStates()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -579,7 +599,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2,rule3])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter, external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -601,7 +621,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testSimpleFailedExecution()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -610,7 +632,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -620,7 +642,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testSimpleExternalExecution()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT", kid: "abc123")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT", kid: "abc123")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -629,7 +653,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -639,7 +663,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testSimpleRuleExecutionWithWrongType()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Recovery", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -648,7 +674,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -657,7 +683,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testSimpleRuleExecutionWithGeneralType()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -666,7 +694,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -676,7 +704,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleExecutionWithGeneralTypeAndVaccination()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -689,7 +719,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -700,7 +730,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRuleExpired()
     {
-        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], countryCode: "DE", exp:Date.distantPast , iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantPast , iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "1991-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -713,7 +745,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -722,7 +754,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testRulePartiallyExpired()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "1991-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -735,7 +769,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -745,7 +779,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testAcceptanceAndInvalidation()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "1991-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -758,7 +794,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -768,7 +804,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testAcceptanceAndInvalidationFail()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -781,7 +819,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         XCTAssertTrue(result[0].result == .passed)
@@ -790,7 +828,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testAcceptanceAndInvalidationWithWrongType()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -803,7 +843,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         XCTAssertTrue(result[0].result == .passed)
@@ -812,7 +852,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testWithRegion()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT", region: "10")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: "10")
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "GR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -825,7 +867,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
@@ -835,7 +877,9 @@ final class RuleEngineTests: XCTestCase {
     
     func testWithRegionAndInvalidation()
     {
-        let external = ExternalParameter(validationClock: Date(), valueSets: [:], countryCode: "DE", exp:Date.distantFuture, iat: Date.distantPast, certificationType: CertificateType.vaccination, issuerCountryCode: "AT", region: "10")
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: "10")
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp:Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
         
         
         let rule1 = Rule(identifier: "IR-DE-0001", type: "Invalidation", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
@@ -848,7 +892,7 @@ final class RuleEngineTests: XCTestCase {
                 
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         
-        let result = engine.validate(external: external, payload: """
+        let result = engine.validate(filter: filter, external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
