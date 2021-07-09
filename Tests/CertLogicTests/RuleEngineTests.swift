@@ -453,6 +453,33 @@ final class RuleEngineTests: XCTestCase {
         XCTAssertTrue(result.count==1)
     }
     
+    func testRulengineVersion()
+    {
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date.init(), valueSets: [:], exp:Date.distantFuture , iat: Date.distantPast, issuerCountryCode: "AT")
+        
+        
+        let rule1 = Rule(identifier: "VR-DE-0001", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "0.7.5", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+                            {"==":["1","1"]}
+                        """), countryCode: "DE")
+        
+        
+        let rule2 = Rule(identifier: "VR-DE-0002", type: "Acceptance", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.1", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+                            {"==":["1","1"]}
+                        """), countryCode: "DE")
+        
+        let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1, rule2])
+        
+        let result = engine.validate(filter: filter,external: external, payload: """
+                                                                        {"ver":"1.0.0"}
+                                                                  """)
+        
+        XCTAssertTrue(result[0].result == .passed)
+        XCTAssertTrue(result[1].result == .open)
+        XCTAssertTrue(result.count==2)
+    }
+    
     func testRuleSchemaVersioning()
     {
         let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)

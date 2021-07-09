@@ -94,7 +94,7 @@ final public class CertLogicEngine {
       }
       //Check if QR code version great or equal of rule code, if no skiped this rule
       // Scheme version of QR code always should be greate of equal of rule scheme version
-    guard self.getVersion(from: rule.engineVersion) >= self.getVersion(from: Constants.engineVersion) else {
+    guard self.getVersion(from: rule.engineVersion) <= self.getVersion(from: Constants.engineVersion) else {
         return false
       }
       return true
