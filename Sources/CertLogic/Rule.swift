@@ -62,6 +62,7 @@ public class Rule: Codable {
       if let date = Date.iso8601Full.date(from: validFrom) { return date }
       if let date = Date.isoFormatterNotFull.date(from: validFrom) { return date }
       if let date = Date.formatterWithPlus.date(from: validFrom) { return date }
+      if let date = Date.iso8601Formatter.date(from: validFrom) { return date }
       return Date()
     }
   }
@@ -73,6 +74,7 @@ public class Rule: Codable {
       if let date = Date.iso8601Full.date(from: validTo) { return date }
       if let date = Date.isoFormatterNotFull.date(from: validTo) { return date }
       if let date = Date.formatterWithPlus.date(from: validTo) { return date }
+      if let date = Date.iso8601Formatter.date(from: validTo) { return date }
       return Date()
     }
   }

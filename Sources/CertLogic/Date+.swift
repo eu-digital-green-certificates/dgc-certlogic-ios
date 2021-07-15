@@ -52,6 +52,15 @@ extension Date {
     formatter.locale = Locale(identifier: "en_US_POSIX")
     return formatter
   }()
+  
+  static let iso8601Formatter: ISO8601DateFormatter = {
+          let formatter = ISO8601DateFormatter()
+          formatter.formatOptions = [.withFullDate,
+                                            .withTime,
+                                            .withDashSeparatorInDate,
+                                            .withColonSeparatorInTime]
+          return formatter
+      }()
 
   var ISO8601String: String { return Date.iso8601Full.string(from: self) }
 
