@@ -44,6 +44,15 @@ extension Date {
     return formatter
   }()
 
+  static var formatterWithPlus: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'ZZZZZ'"
+    formatter.calendar = Calendar(identifier: .iso8601)
+    formatter.timeZone = TimeZone(abbreviation: "UTC")
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    return formatter
+  }()
+
   var ISO8601String: String { return Date.iso8601Full.string(from: self) }
 
 }
