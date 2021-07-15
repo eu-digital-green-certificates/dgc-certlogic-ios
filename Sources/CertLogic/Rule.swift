@@ -126,7 +126,8 @@ public class Rule: Codable {
          affectedString = "AffectedFields",
          countryCode = "Country",
          logic = "Logic",
-         region
+         region,
+         hash
   }
   
   // Set Hash of JSON string
@@ -181,7 +182,8 @@ public class Rule: Codable {
     affectedString = try container.decode([String].self, forKey: .affectedString)
     logic = try container.decode(JSON.self, forKey: .logic)
     countryCode = try container.decode(String.self, forKey: .countryCode)
-    region = try? container.decode(String.self, forKey: .region)
+    region = try container.decodeIfPresent(String.self, forKey: .region)
+    hash = try container.decodeIfPresent(String.self, forKey: .hash)
   }
   
   public func encode(to encoder: Encoder) throws {
@@ -199,7 +201,8 @@ public class Rule: Codable {
     try container.encode(affectedString, forKey: .affectedString)
     try container.encode(logic, forKey: .logic)
     try container.encode(countryCode, forKey: .countryCode)
-    try container.encode(region, forKey: .region)
+    try container.encodeIfPresent(region, forKey: .region)
+    try container.encodeIfPresent(hash, forKey: .hash)
   }
   
 }
