@@ -49,7 +49,7 @@ final public class CertLogicEngine {
       return result
     }
     rulesItems.forEach { rule in
-      if !checkSchemeVersion(for: rule, qrCodeSchemeVersion: qrCodeSchemeVersion) {
+        if !checkSchemeVersion(for: rule, qrCodeSchemeVersion: qrCodeSchemeVersion) || !checkEngineVersion(for: rule) || rule.engine != Constants.engine {
         result.append(ValidationResult(rule: rule, result: .open, validationErrors: [CertLogicError.openState]))
       } else {
         do {
@@ -84,6 +84,20 @@ final public class CertLogicEngine {
       return false
     }
     return true
+  }
+    
+    // MARK: check scheme version from qr code and from rule
+  private func checkEngineVersion(for rule: Rule) -> Bool {
+      //Check if major version more 1 skip this rule
+    guard abs(self.getVersion(from: rule.engineVersion) - self.getVersion(from: Constants.engineVersion)) < Constants.majorVersionForSkip else {
+        return false
+      }
+      //Check if QR code version great or equal of rule code, if no skiped this rule
+      // Scheme version of QR code always should be greate of equal of rule scheme version
+    guard self.getVersion(from: rule.engineVersion) <= self.getVersion(from: Constants.engineVersion) else {
+        return false
+      }
+      return true
   }
   
   // MARK: calculate scheme version in Int "1.0.0" -> 10000, "1.2.0" -> 10200, 2.0.1 -> 20001
@@ -129,7 +143,9 @@ final public class CertLogicEngine {
     var generalRulesWithInvalidation = rules.filter { rule in
       return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
-    if let region = filter.region {
+    
+    //deactivated for Invalidation Rules, because Regions are not in the QR Code. Verifier is not able to to find out which region issues the code (mostly centrally issued). Verifier can just quess.
+   /* if let region = external.region {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -137,7 +153,7 @@ final public class CertLogicEngine {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region == nil
       }
-    }
+    }*/
     
     let groupedGeneralRulesWithInvalidation = generalRulesWithInvalidation.group(by: \.identifier)
     let groupedGeneralRulesWithAcceptence = generalRulesWithAcceptence.group(by: \.identifier)
@@ -296,6 +312,8 @@ extension CertLogicEngine {
     static let defSchemeVersion = "1.0.0"
     static let maxVersion: Int = 2
     static let majorVersionForSkip: Int = 10000
+    static let engineVersion = "1.0.0"
+    static let engine = "CERTLOGIC"
 
     static let testEntry = "test_entry"
     static let vaccinationEntry = "vaccination_entry"
