@@ -144,8 +144,7 @@ final public class CertLogicEngine {
       return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
     }
     
-    //deactivated for Invalidation Rules, because Regions are not in the QR Code. Verifier is not able to to find out which region issues the code (mostly centrally issued). Verifier can just quess.
-   /* if let region = external.region {
+    if let region = filter.region {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region?.lowercased() == region.lowercased()
       }
@@ -153,7 +152,7 @@ final public class CertLogicEngine {
       generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
         rule.region == nil
       }
-    }*/
+    }
     
     let groupedGeneralRulesWithInvalidation = generalRulesWithInvalidation.group(by: \.identifier)
     let groupedGeneralRulesWithAcceptence = generalRulesWithAcceptence.group(by: \.identifier)
