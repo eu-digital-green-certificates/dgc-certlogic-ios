@@ -130,7 +130,7 @@ public class Rule: Codable {
          affectedString = "AffectedFields",
          countryCode = "Country",
          logic = "Logic",
-         region,
+         region = "Region",
          hash
   }
   
