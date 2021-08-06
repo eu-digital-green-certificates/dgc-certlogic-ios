@@ -186,7 +186,7 @@ After that you can create Externa Parameter
 
 * Only after creating all of this objects you can use CertLogicEngine to validate certificate with rules you loaded before.
 
-    let result = CertLogicEngine().validate(filter: filterParameter, external: externalParameters,
+        let result = CertLogicEngine().validate(filter: filterParameter, external: externalParameters,
                                                                 payload: hCert.body.description)
 
 Result of .validate function it's array of validation result models:  [ValidationResult]. This array contains .fail, .open, .passed results. If you need you can filter them and get only list of .fail or .open resuls.
