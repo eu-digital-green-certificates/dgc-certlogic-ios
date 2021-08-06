@@ -22,27 +22,73 @@
   <a href="#how-to-contribute">Contribute</a> •
   <a href="#contributors">Contributors</a> •
   <a href="#licensing">Licensing</a>
+  <a href="#assumptions">Assumptions</a>
+  <a href="#testing & status">Testing & Status</a>
 </p>
 
 ## About
 
 This repository contains the source code of the EU Digital COVID Certificate Certlogic for iOS. 
 
+The [Digital COVID Certificate (DCC)](https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/safe-covid-19-vaccines-europeans/eu-digital-covid-certificate_en) allows to determine whether a person is deemed fit-for-travel into a country-of-arrival (CoA) based on their vaccination, test, and recovery status.
+To make such determinations, business (or validation, or verification) rules have to be implemented in verifier and wallet apps.
+
 This module allows integrating the certlogic in iOS apps.
+
+This repository contains a framework to implement in verifier apps (and backends) using a _CertLogicEngine_.
+It [explains how to do that](./documentation/how-to.md) in a way that makes these rules interchangeable across implementors.
+The advantage of this approach is that it ultimately allows citizens to check their fit-for-travel status into an intended CoA _ahead_ of travel, against the actual rules.
+
+This can be achieved by adhering to a common, and testable and verifiable way of defining, and executing rules.
+The interchangeable rules are uploaded to, and can be downloaded from the EU Digital COVID Certificate Gateway (DGCG) - more info can be found [here](./documentation/gateway.md).
+
+An example of a rule can be found [here](./documentation/example.adoc).
+
+This work is a result of work done by the EU Taskforce Business Rules, and described in [this document](https://ec.europa.eu/health/sites/default/files/ehealth/docs/eu-dcc_validation-rules_en.pdf).
+The (JSON Schema) technical specification for the EU DCC can be found [here](https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf).
 
 ## Development
 
 ### Prerequisites
 
-- [ ] TODO: Prerequisites
+This library automaticaly added in dependencies and downloading by XCode Swift Package Manager
 
-### Build
+* [JsonLogic](https://github.com/eu-digital-green-certificates/json-logic-swift)
+* [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)
 
-- [ ] TODO: Build Instructions
+#### Using Swift Package Manager
+
+if you use Swift Package Manager add the following in dependencies:
+
+        dependencies: [
+        .package(
+            url: "https://github.com/eu-digital-green-certificates/dgc-certlogic-ios", from: "1.0.0"
+        )
+    ]
+  
+if you want to use CertLogic as XCode project please use script for generate certlogic.xcodeproj and add this project directly
+
+    generate-xcodeproj.sh
+  
+
+## Assumptions
+
+Various code in this repo assumes that you've cloned the following two repos right next to where this repo's cloned:
+
+* [ehn-dcc-schema](https://github.com/ehn-dcc-development/ehn-dcc-schema)
+* [ehn-dcc-valuesets](https://github.com/ehn-dcc-development/ehn-dcc-valuesets)
+* ([dgc-testdata](https://github.com/ehn-dcc-development/dgc-testdata))
+
+## Testing & Status
+
+- If you found any problems, please create an [Issue](/../../issues).
+- Current status: Work-In-Progress.
 
 ## Documentation
 
-- [ ] TODO: Add docs or link to docs
+* [Documentation](./documentation/README.md).
+* [JsonLogic](https://github.com/eu-digital-green-certificates/json-logic-swift): documentation and code relating to JsonLogic.
+* [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON): documentation and code relating to SwiftyJSON library.
 
 ## Support and feedback
 
