@@ -10,6 +10,13 @@ import Foundation
 
 public typealias Codable = Decodable & Encodable
 
+public enum ValidationType {
+  case all
+  case issuer
+  case destination
+  case traveller
+}
+
 final public class CertLogicEngine {
   
   private var schema: JSON?
@@ -35,11 +42,21 @@ final public class CertLogicEngine {
     self.rules = rules
   }
   
-  public func validate(filter: FilterParameter, external: ExternalParameter, payload: String) -> [ValidationResult] {
+  public func validate(filter: FilterParameter, external: ExternalParameter, payload: String, validationType: ValidationType = .all) -> [ValidationResult] {
     self.payloadJSON = JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
-    let rulesItems = getListOfRulesFor(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    var rulesItems = [Rule]()
+    switch validationType {
+    case .all:
+      rulesItems = getListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    case .issuer:
+      rulesItems = getListOfRulesForIssuer(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    case .destination:
+      rulesItems = getListOfRulesForDestination(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    case .traveller:
+      rulesItems = getListOfRulesForTraveller(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    }
     if(rules.count == 0) {
       result.append(ValidationResult(rule: nil, result: .passed, validationErrors: nil))
       return result
@@ -71,7 +88,7 @@ final public class CertLogicEngine {
     }
       return result
   }
-
+  
   // MARK: check scheme version from qr code and from rule
   private func checkSchemeVersion(for rule: Rule, qrCodeSchemeVersion: String) -> Bool {
     //Check if major version more 1 skip this rule
@@ -125,7 +142,7 @@ final public class CertLogicEngine {
   }
   
   // Get List of Rules for Country by Code
-  private func getListOfRulesFor(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+  private func getListOfRulesForAll(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
     var returnedRulesItems: [Rule] = []
     var generalRulesWithAcceptence = rules.filter { rule in
       return rule.countryCode.lowercased() == filter.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
@@ -223,6 +240,124 @@ final public class CertLogicEngine {
 
     return returnedRulesItems
   }
+
+  // Get List of Rules for Country by Code
+  private func getListOfRulesForIssuer(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+    var returnedRulesItems: [Rule] = []
+    
+    var generalRulesWithInvalidation = rules.filter { rule in
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+    }
+    
+    if let region = filter.region {
+      generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      generalRulesWithInvalidation = generalRulesWithInvalidation.filter { rule in
+        rule.region == nil
+      }
+    }
+    
+    let groupedGeneralRulesWithInvalidation = generalRulesWithInvalidation.group(by: \.identifier)
+ 
+    //General Rule with Acceptence type and max Version number grouped by Identifier
+    groupedGeneralRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedGeneralRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+ 
+    var certTypeRulesWithInvalidation = rules.filter { rule in
+      return rule.countryCode.lowercased() == issuerCountryCode.lowercased() && rule.ruleType == .invalidation && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+    }
+    if let region = filter.region {
+      certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      certTypeRulesWithInvalidation = certTypeRulesWithInvalidation.filter { rule in
+        rule.region == nil
+      }
+    }
+
+    let groupedCertTypeRulesWithInvalidation = certTypeRulesWithInvalidation.group(by: \.identifier)
+    groupedCertTypeRulesWithInvalidation.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithInvalidation[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+
+    return returnedRulesItems
+  }
+
+  // Get List of Rules for Country by Code
+  private func getListOfRulesForDestination(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+    var returnedRulesItems: [Rule] = []
+
+    var certTypeRulesWithAcceptence = rules.filter { rule in
+      return rule.countryCode.lowercased() == filter.countryCode.lowercased() && rule.ruleType == .acceptence  && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+    }
+    if let region = filter.region {
+      certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      certTypeRulesWithAcceptence = certTypeRulesWithAcceptence.filter { rule in
+        rule.region == nil
+      }
+    }
+
+    let groupedCertTypeRulesWithAcceptence = certTypeRulesWithAcceptence.group(by: \.identifier)
+
+    groupedCertTypeRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedCertTypeRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+    return returnedRulesItems
+  }
+  
+  // Get List of Rules for Country by Code
+  private func getListOfRulesForTraveller(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+    var returnedRulesItems: [Rule] = []
+    var generalRulesWithAcceptence = rules.filter { rule in
+      return rule.countryCode.lowercased() == filter.countryCode.lowercased() && rule.ruleType == .acceptence && rule.certificateFullType == .general && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+    }
+    if let region = filter.region {
+      generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
+        rule.region?.lowercased() == region.lowercased()
+      }
+    } else {
+      generalRulesWithAcceptence = generalRulesWithAcceptence.filter { rule in
+        rule.region == nil
+      }
+    }
+    
+    let groupedGeneralRulesWithAcceptence = generalRulesWithAcceptence.group(by: \.identifier)
+
+    groupedGeneralRulesWithAcceptence.keys.forEach { key in
+      let rules = groupedGeneralRulesWithAcceptence[key]
+      if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+         return ruleOne.versionInt < ruleTwo.versionInt
+      }) {
+       returnedRulesItems.append( maxRules)
+      }
+    }
+
+
+    return returnedRulesItems
+  }
+
 
   static public func getItems<T:Decodable>(from jsonString: String) -> [T] {
     guard let jsonData = jsonString.data(using: .utf8) else { return []}
