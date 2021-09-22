@@ -923,14 +923,13 @@ final class RuleEngineTests: XCTestCase {
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
                                                                   """)
         
-        if(result.count < 2)
+        if(result.count != 1)
         {
             XCTFail()
             return
         }
         
-        XCTAssertTrue(result[0].result == .fail)
-        XCTAssertTrue(result[1].result == .passed)
+        XCTAssertTrue(result[0].result == .passed)
     }
     
 }

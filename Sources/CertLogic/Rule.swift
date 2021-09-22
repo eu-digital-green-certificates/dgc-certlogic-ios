@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftyJSON
+import jsonlogic
 
 // MARK: Rule type
 
@@ -209,6 +210,16 @@ public class Rule: Codable {
     try container.encodeIfPresent(hash, forKey: .hash)
   }
   
+  private var _parsedJsonLogic: JsonLogic? = nil
+
+  func parsedJsonLogic() throws -> JsonLogic {
+    if let _parsedJsonLogic = _parsedJsonLogic {
+      return _parsedJsonLogic
+    }
+    let parsedJsonLogicObject = try JsonLogic(logic.description)
+    _parsedJsonLogic = parsedJsonLogicObject
+    return parsedJsonLogicObject
+  }
 }
 
 public class RuleHash: Codable {
