@@ -7,6 +7,7 @@
 import jsonlogic
 import SwiftyJSON
 import Foundation
+import JSON
 
 public typealias Codable = Decodable & Encodable
 
@@ -19,22 +20,22 @@ public enum ValidationType {
 
 final public class CertLogicEngine {
   
-  private var schema: JSON?
-  private var payloadJSON: JSON?
+  private var schema: SwiftyJSON.JSON?
+  private var payloadJSON: SwiftyJSON.JSON?
   private var rules: [Rule]
   
   public init(schema: String, rules: [Rule]) {
-    self.schema = JSON(parseJSON: schema)
+    self.schema = SwiftyJSON.JSON(parseJSON: schema)
     self.rules = rules
   }
 
   public init(schema: String, rulesData: Data) {
-    self.schema = JSON(parseJSON: schema)
+    self.schema = SwiftyJSON.JSON(parseJSON: schema)
     self.rules = CertLogicEngine.getItems(from: rulesData)
   }
 
   public init(schema: String, rulesJSONString: String) {
-    self.schema = JSON(parseJSON: schema)
+    self.schema = SwiftyJSON.JSON(parseJSON: schema)
     self.rules = CertLogicEngine.getItems(from: rulesJSONString)
   }
 
@@ -43,7 +44,7 @@ final public class CertLogicEngine {
   }
   
   public func validate(filter: FilterParameter, external: ExternalParameter, payload: String, validationType: ValidationType = .all) -> [ValidationResult] {
-    self.payloadJSON = JSON(parseJSON: payload)
+    self.payloadJSON = SwiftyJSON.JSON(parseJSON: payload)
     var result: [ValidationResult] = []
 
     var rulesItems = [Rule]()
@@ -65,13 +66,16 @@ final public class CertLogicEngine {
       result.append(ValidationResult(rule: nil, result: .fail, validationErrors: nil))
       return result
     }
+    
+    let jsonStringForValidation = getJSONStringForValidation(external: external, payload: payload)
+    let jsonObjectForValidation = JSON(string: jsonStringForValidation)
+
     rulesItems.forEach { rule in
         if !checkSchemeVersion(for: rule, qrCodeSchemeVersion: qrCodeSchemeVersion) || !checkEngineVersion(for: rule) || rule.engine != Constants.engine {
         result.append(ValidationResult(rule: rule, result: .open, validationErrors: [CertLogicError.openState]))
       } else {
         do {
-          let jsonlogic = try JsonLogic(rule.logic.description)
-          let results: Any = try jsonlogic.applyRule(to: getJSONStringForValidation(external: external, payload: payload))
+          let results: Any = try rule.parsedJsonLogic().applyRuleInternal(to: jsonObjectForValidation)
           if results is Bool {
             if results as! Bool {
               result.append(ValidationResult(rule: rule, result: .passed, validationErrors: nil))
