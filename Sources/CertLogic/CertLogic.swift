@@ -24,6 +24,11 @@ final public class CertLogicEngine {
   private var payloadJSON: SwiftyJSON.JSON?
   private var rules: [Rule]
   
+  public init(schema: SwiftyJSON.JSON, rules: [Rule]) {
+    self.schema = schema
+    self.rules = rules
+  }
+  
   public init(schema: String, rules: [Rule]) {
     self.schema = SwiftyJSON.JSON(parseJSON: schema)
     self.rules = rules
