@@ -8,7 +8,6 @@ import jsonlogic
 import SwiftyJSON
 import Foundation
 
-public typealias Codable = Decodable & Encodable
 
 public enum ValidationType {
   case all

@@ -37,67 +37,41 @@ public class ValueSet: Codable {
     valueSetDate = try container.decode(String.self, forKey: .valueSetDate)
     valueSetValues = try container.decode(Dictionary.self, forKey: .valueSetValues)
   }
-  
 }
 
-public class ValueSetItem: Codable {
+public struct ValueSetItem: Codable {
   
-  public var display: String
-  public var lang: String
-  public var active: Bool
-  public var system: String
-  public var version: String
-  
-  enum CodingKeys: String, CodingKey {
-    case display, lang, active, system, version
-  }
-  
-  public init(display: String, lang: String, active: Bool, system: String, version: String) {
-    self.display = display
-    self.lang = lang
-    self.active = active
-    self.system = system
-    self.version = version
-  }
-  
-  required public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    display = try container.decode(String.self, forKey: .display)
-    lang = try container.decode(String.self, forKey: .lang)
-    active = try container.decode(Bool.self, forKey: .active)
-    system = try container.decode(String.self, forKey: .system)
-    version = try container.decode(String.self, forKey: .version)
-  }
+  public let display: String
+  public let lang: String
+  public let active: Bool
+  public let system: String
+  public let version: String
 }
 
-public class ValueSetHash: Codable {
-  
-  public var identifier: String
-  public var hash: String
+public struct ValueSetHash: Codable {
+  public let identifier: String
+  public let hash: String
   
   enum CodingKeys: String, CodingKey {
     case identifier = "id", hash
   }
   
   // Init with custom fields
-  public init(identifier: String,
-       type: String,
-       hash: String) {
+  public init(identifier: String, type: String, hash: String) {
     self.identifier = identifier
     self.hash = hash
   }
   
   // Init Rule from JSON Data
-  required public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    identifier = try container.decode(String.self, forKey: .identifier)
-    hash = try container.decode(String.self, forKey: .hash)
-  }
-  
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        identifier = try container.decode(String.self, forKey: .identifier)
+        hash = try container.decode(String.self, forKey: .hash)
+    }
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(identifier, forKey: .identifier)
     try container.encode(hash, forKey: .hash)
   }
-  
 }

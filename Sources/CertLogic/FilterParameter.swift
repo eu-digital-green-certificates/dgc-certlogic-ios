@@ -10,16 +10,12 @@ import Foundation
 // MARK: ExternalParameter type
 
 public class FilterParameter {
-  
-  public var validationClock: Date
-  public var countryCode: String
+  public let validationClock: Date
+  public let countryCode: String
   public var region: String?
   public var certificationType: CertificateType = .general
 
-  public init(validationClock: Date,
-       countryCode: String,
-       certificationType: CertificateType,
-       region: String? = nil) {
+  public init(validationClock: Date, countryCode: String, certificationType: CertificateType, region: String? = nil) {
     self.validationClock = validationClock
     self.countryCode = countryCode
     self.certificationType = certificationType
