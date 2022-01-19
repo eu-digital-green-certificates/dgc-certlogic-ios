@@ -10,23 +10,18 @@ import Foundation
 // MARK: ExternalParameter type
 
 public struct ExternalParameter: Codable {
-  
-  public let validationClock: Date
-  public let valueSets: Dictionary<String, [String]>
-  public let issuerCountryCode: String
-  public let exp: Date
-  public let iat: Date
-  public var kid: String?
+    public let validationClock: Date
+    public let valueSets: Dictionary<String, [String]>
+    public let exp: Date
+    public let iat: Date
+    public let issuerCountryCode: String
+    public var kid: String?
 
   enum CodingKeys: String, CodingKey {
     case validationClock, valueSets, issuerCountryCode, exp, iat, kid
   }
   
-  public init(validationClock: Date,
-       valueSets: Dictionary<String, [String]>,
-       exp: Date,
-       iat: Date,
-       issuerCountryCode: String,
+  public init(validationClock: Date, valueSets: Dictionary<String, [String]>, exp: Date, iat: Date, issuerCountryCode: String,
        kid: String? = nil) {
     self.validationClock = validationClock
     self.valueSets = valueSets
