@@ -19,7 +19,7 @@ let package = Package(
     
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "JsonLogic", url: "https://github.com/eu-digital-green-certificates/json-logic-swift.git", .branch("feat/fiixed-cert-logic")), //from: "1.2.0"),
+        .package(name: "JsonLogic", url: "https://github.com/eu-digital-green-certificates/json-logic-swift.git", .branch("master")), //from: "1.2.0"),
         .package(name: "SwiftyJSON", url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0")
     ],
     targets: [
