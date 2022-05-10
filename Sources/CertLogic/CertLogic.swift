@@ -4,7 +4,7 @@
 //
 //  Created by Alexandr Chernyy on 08.06.2021.
 //
-import jsonlogic
+import JsonLogic
 import SwiftyJSON
 import Foundation
 

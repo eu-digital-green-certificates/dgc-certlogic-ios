@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Sequence.swift
 //  
 //
 //  Created by Alexandr Chernyy on 07.07.2021.
