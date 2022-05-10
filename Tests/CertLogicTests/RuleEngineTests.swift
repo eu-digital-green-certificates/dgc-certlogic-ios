@@ -410,17 +410,17 @@ final class RuleEngineTests: XCTestCase {
                             {"==":["1","1"]}
                         """), countryCode: "DE")
         
-        let rule3 = Rule(identifier: "VR-DE-0002", type: "Acceptance", version: "2.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
-                            {"==":["1","1"]}
-                        """), countryCode: "DE")
-        
-        let rule4 = Rule(identifier: "VR-DE-0003", type: "Acceptance", version: "0.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
-                            {">":["1","1"]}
-                        """), countryCode: "DE")
-        
-        let rule5 = Rule(identifier: "VR-DE-0003", type: "Acceptance", version: "3.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
-                            {"==":["1","1"]}
-                        """), countryCode: "DE")
+//        let rule3 = Rule(identifier: "VR-DE-0002", type: "Acceptance", version: "2.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+//                            {"==":["1","1"]}
+//                        """), countryCode: "DE")
+//        
+//        let rule4 = Rule(identifier: "VR-DE-0003", type: "Acceptance", version: "0.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+//                            {">":["1","1"]}
+//                        """), countryCode: "DE")
+//        
+//        let rule5 = Rule(identifier: "VR-DE-0003", type: "Acceptance", version: "3.0.1", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "2020-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+//                            {"==":["1","1"]}
+//                        """), countryCode: "DE")
         
         let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
         

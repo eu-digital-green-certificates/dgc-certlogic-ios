@@ -611,13 +611,12 @@ final class CertLogicTests: XCTestCase {
       }
     }
     """
-    
         // "Logic": "{\\\"and\\\":[{\\\">=\\\":[{\\\"var\\\":\\\"dt\\\"},\\\"23.12.2012\\\"]},{\\\">=\\\":[{\\\"var\\\":\\\"nm\\\"},\\\"ABC\\\"]}]}"
         
         
     if let externalParameter: ExternalParameter = CertLogicEngine.getItem(from: external) {
       let rules: [Rule] = CertLogicEngine.getItems(from: rulesString)
-      let valueSet: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
+        let _: ValueSet? = CertLogicEngine.getItem(from: valueSetString)
       let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: rules)
       let filter = FilterParameter(validationClock: Date(), countryCode: "UA", certificationType: .vaccination)
       let result = engine.validate(filter: filter, external: externalParameter, payload: payload)
