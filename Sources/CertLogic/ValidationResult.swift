@@ -17,14 +17,11 @@ public enum Result: Int {
 // MARK: ValidationResult
 
 public class ValidationResult {
-  
   public var rule: Rule?
   public var result: Result = .open
   public var validationErrors: [Error]?
   
-  public init(rule: Rule?,
-       result: Result = .open,
-       validationErrors: [Error]? = nil) {
+  public init(rule: Rule?, result: Result = .open, validationErrors: [Error]? = nil) {
     self.rule = rule
     self.result = result
     self.validationErrors = validationErrors
