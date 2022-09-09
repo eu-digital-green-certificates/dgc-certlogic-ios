@@ -13,6 +13,11 @@ import SwiftyJSON
 public enum RuleType: String {
   case acceptence = "Acceptance"
   case invalidation = "Invalidation"
+  case _2G = "TwoG"
+  case _2GPlus = "TwoGPlus"
+  case _3G = "ThreeG"
+  case _3GPlus = "ThreeGPlus"
+  case mask = "Mask"
 }
 
 public enum CertificateType: String {
