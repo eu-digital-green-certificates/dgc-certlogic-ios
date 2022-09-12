@@ -829,6 +829,31 @@ final class RuleEngineTests: XCTestCase {
         XCTAssertTrue(result.count==1)
     }
     
+    func testCustomRuleType()
+    {
+        let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.general, region: nil)
+        
+        let external = ExternalParameter(validationClock: Date(), valueSets: [:], exp: Date.distantFuture, iat: Date.distantPast, issuerCountryCode: "AT")
+        
+        
+        let rule1 = Rule(identifier: "GR-DE-0001", type: "SomeCustom", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "General", description: [Description(lang: "en", desc: "Hello")], validFrom: "1990-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+                            {"==":[{"var":"payload.v.0.ma"},"123"]}
+                        """), countryCode: "DE")
+        
+        let rule2 = Rule(identifier: "IR-DE-0001", type: "SomeCustom", version: "1.0.0", schemaVersion: "1.0.0", engine: "CERTLOGIC", engineVersion: "1.0.0", certificateType: "Vaccination", description: [Description(lang: "en", desc: "Hello")], validFrom: "1991-06-01T00:00:00Z", validTo: "2030-06-01T00:00:00Z", affectedString: ["v.0.ma"], logic: JSON("""
+                            {"==":[{"var":"payload.v.0.ma"},"123"]}
+                        """), countryCode: "DE")
+                
+        let engine = CertLogicEngine(schema: euDgcSchemaV1, rules: [rule1,rule2])
+        
+        let result = engine.validate(filter: filter,external: external, payload: """
+                                                                        {"ver":"1.0.0","v":[{"ma":"123"}]}
+                                                                  """, validationType: .allRuleTypes)
+        
+        XCTAssertTrue(result[0].result == .passed)
+        XCTAssertTrue(result.count==1)
+    }
+    
     func testAcceptanceAndInvalidationFail()
     {
         let filter = FilterParameter(validationClock: Date.init(), countryCode: "DE", certificationType: CertificateType.vaccination, region: nil)
