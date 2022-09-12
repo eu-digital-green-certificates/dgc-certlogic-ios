@@ -15,7 +15,7 @@ public enum ValidationType {
   case issuer
   case destination
   case traveller
-  case custom
+  case allRuleTypes
 }
 
 final public class CertLogicEngine {
@@ -49,8 +49,8 @@ final public class CertLogicEngine {
 
     var rulesItems = [Rule]()
     switch validationType {
-    case .custom:
-      rulesItems = getCustomListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
+    case .allRuleTypes:
+      rulesItems = getListOfAllRulesFor(filter: filter, issuerCountryCode: external.issuerCountryCode)
     case .all:
       rulesItems = getListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
     case .issuer:
@@ -145,25 +145,25 @@ final public class CertLogicEngine {
   }
 
     // Get List of Rules for Country by Code
-    private func getCustomListOfRulesForAll(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+    private func getListOfAllRulesFor(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
       var returnedRulesItems: [Rule] = []
-      var certTypeRulesWith = rules.filter { rule in
+      var certTypeRules = rules.filter { rule in
         return rule.countryCode.lowercased() == filter.countryCode.lowercased()  && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
       }
       if let region = filter.region {
-        certTypeRulesWith = certTypeRulesWith.filter { rule in
+        certTypeRules = certTypeRules.filter { rule in
           rule.region?.lowercased() == region.lowercased()
         }
       } else {
-        certTypeRulesWith = certTypeRulesWith.filter { rule in
+        certTypeRules = certTypeRules.filter { rule in
           rule.region == nil
         }
       }
 
-      let groupedCertTypeRulesWith = certTypeRulesWith.group(by: \.identifier)
+      let groupedCertTypeRules = certTypeRules.group(by: \.identifier)
 
-      groupedCertTypeRulesWith.keys.forEach { key in
-        let rules = groupedCertTypeRulesWith[key]
+      groupedCertTypeRules.keys.forEach { key in
+        let rules = groupedCertTypeRules[key]
         if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
            return ruleOne.versionInt < ruleTwo.versionInt
         }) {

@@ -848,7 +848,7 @@ final class RuleEngineTests: XCTestCase {
         
         let result = engine.validate(filter: filter,external: external, payload: """
                                                                         {"ver":"1.0.0","v":[{"ma":"123"}]}
-                                                                  """, validationType: .custom)
+                                                                  """, validationType: .allRuleTypes)
         
         XCTAssertTrue(result[0].result == .passed)
         XCTAssertTrue(result.count==1)
