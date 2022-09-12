@@ -15,6 +15,7 @@ public enum ValidationType {
   case issuer
   case destination
   case traveller
+  case custom
 }
 
 final public class CertLogicEngine {
@@ -48,6 +49,8 @@ final public class CertLogicEngine {
 
     var rulesItems = [Rule]()
     switch validationType {
+    case .custom:
+      rulesItems = getCustomListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
     case .all:
       rulesItems = getListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
     case .issuer:
@@ -140,6 +143,36 @@ final public class CertLogicEngine {
     result = "{" + "\"\(Constants.external)\":" + "\(externalJsonString)" + "," + "\"\(Constants.payload)\":" + "\(payload)"  + "}"
     return result
   }
+
+    // Get List of Rules for Country by Code
+    private func getCustomListOfRulesForAll(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
+      var returnedRulesItems: [Rule] = []
+      var certTypeRulesWith = rules.filter { rule in
+        return rule.countryCode.lowercased() == filter.countryCode.lowercased()  && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+      }
+      if let region = filter.region {
+        certTypeRulesWith = certTypeRulesWith.filter { rule in
+          rule.region?.lowercased() == region.lowercased()
+        }
+      } else {
+        certTypeRulesWith = certTypeRulesWith.filter { rule in
+          rule.region == nil
+        }
+      }
+
+      let groupedCertTypeRulesWith = certTypeRulesWith.group(by: \.identifier)
+
+      groupedCertTypeRulesWith.keys.forEach { key in
+        let rules = groupedCertTypeRulesWith[key]
+        if let maxRules = rules?.max(by: { (ruleOne, ruleTwo) -> Bool in
+           return ruleOne.versionInt < ruleTwo.versionInt
+        }) {
+         returnedRulesItems.append( maxRules)
+        }
+      }
+
+      return returnedRulesItems
+    }
   
   // Get List of Rules for Country by Code
   private func getListOfRulesForAll(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
