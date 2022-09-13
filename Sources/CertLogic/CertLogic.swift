@@ -15,7 +15,7 @@ public enum ValidationType {
   case issuer
   case destination
   case traveller
-  case allRuleTypes
+  case allRuleAndCertificateTypes
 }
 
 final public class CertLogicEngine {
@@ -49,7 +49,7 @@ final public class CertLogicEngine {
 
     var rulesItems = [Rule]()
     switch validationType {
-    case .allRuleTypes:
+    case .allRuleAndCertificateTypes:
       rulesItems = getListOfAllRulesFor(filter: filter, issuerCountryCode: external.issuerCountryCode)
     case .all:
       rulesItems = getListOfRulesForAll(filter: filter, issuerCountryCode: external.issuerCountryCode)
@@ -148,7 +148,7 @@ final public class CertLogicEngine {
     private func getListOfAllRulesFor(filter: FilterParameter, issuerCountryCode: String) -> [Rule] {
       var returnedRulesItems: [Rule] = []
       var certTypeRules = rules.filter { rule in
-        return rule.countryCode.lowercased() == filter.countryCode.lowercased()  && rule.certificateFullType == filter.certificationType && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
+        return rule.countryCode.lowercased() == filter.countryCode.lowercased() && filter.validationClock >= rule.validFromDate && filter.validationClock <= rule.validToDate
       }
       if let region = filter.region {
         certTypeRules = certTypeRules.filter { rule in
