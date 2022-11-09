@@ -475,8 +475,8 @@ final class RuleEngineTests: XCTestCase {
                                                                         {"ver":"1.0.0"}
                                                                   """)
         
-        XCTAssertTrue(result[0].result == .passed)
-        XCTAssertTrue(result[1].result == .open)
+        XCTAssertTrue(result[0].result == .open)
+        XCTAssertTrue(result[1].result == .passed)
         XCTAssertTrue(result.count==2)
     }
     

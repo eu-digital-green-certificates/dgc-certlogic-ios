@@ -84,7 +84,7 @@ class RuleTests: XCTestCase {
         // Then
         XCTAssertEqual(ruleType, ._3G)
     }
-
+    
     func testRuleType_3GPlus() {
         // Given
         configureSut(type: "ThreeGPlus")
@@ -94,6 +94,39 @@ class RuleTests: XCTestCase {
 
         // Then
         XCTAssertEqual(ruleType, ._3GPlus)
+    }
+    
+    func testRuleType_ImpfstatusBZweis() {
+        // Given
+        configureSut(type: "ImpfstatusBZwei")
+
+        // When
+        let ruleType = sut.ruleType
+
+        // Then
+        XCTAssertEqual(ruleType, .impfstatusBZwei)
+    }
+    
+    func testRuleType_ImpfstatusCZwei() {
+        // Given
+        configureSut(type: "ImpfstatusCZwei")
+
+        // When
+        let ruleType = sut.ruleType
+
+        // Then
+        XCTAssertEqual(ruleType, .impfstatusCZwei)
+    }
+    
+    func testRuleType_ImpfstatusEZwei() {
+        // Given
+        configureSut(type: "ImpfstatusEZwei")
+
+        // When
+        let ruleType = sut.ruleType
+
+        // Then
+        XCTAssertEqual(ruleType, .impfstatusEZwei)
     }
 
     func testRuleType_mask() {

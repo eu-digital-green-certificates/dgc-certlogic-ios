@@ -17,6 +17,9 @@ public enum RuleType: String {
   case _2GPlus = "TwoGPlus"
   case _3G = "ThreeG"
   case _3GPlus = "ThreeGPlus"
+  case impfstatusBZwei = "ImpfstatusBZwei"
+  case impfstatusCZwei = "ImpfstatusCZwei"
+  case impfstatusEZwei = "ImpfstatusEZwei"
   case mask = "Mask"
 }
 
